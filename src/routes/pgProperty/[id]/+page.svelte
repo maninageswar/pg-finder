@@ -6,11 +6,12 @@
     import { onMount } from 'svelte';
     import * as gmapsLoader from '@googlemaps/js-api-loader';
     const { Loader } = gmapsLoader;
-    import { success } from '$lib/notification'
+    import { success, warning } from '$lib/notification'
 
     let { data } = $props();
     let mapElement;
     let row;
+    let windowWidth = $state(0)
     console.log('data.pgProperty',data.pgProperty)
 
     const pgAmenitiesLabels = {
@@ -53,11 +54,21 @@
         });
     });
 
-    function handleDeleteProperty() {
+    function handlePropertyActions() {
         return async ({ result }) => {
+            if (result.data?.notLoggedIn) {
+                warning(result.data?.notLoggedIn);
+                goto('/auth/login');
+            }
+            if (result.data?.addedInventoryToFavorites) {
+                success(result.data?.addedInventoryToFavorites);
+            }
+            if (result.data?.inventoryExistsInFavorites) {
+                warning(result.data?.inventoryExistsInFavorites);
+            }
             if (result.data?.propertyDeleted) {
-                success(result.data?.propertyDeleted)
-                goto('/')  
+                success(result.data?.propertyDeleted);
+                goto('/');
             }
         }
     }
@@ -71,9 +82,11 @@
     }
 </script>
 
+<svelte:window bind:innerWidth={windowWidth} />
+
 <div class="flex items-center justify-between mb-5">
     <h2 class="font-Manrope">pg information</h2>
-    <form method="POST" use:enhance={handleDeleteProperty}>
+    <form method="POST" use:enhance={handlePropertyActions}>
         <button class="cursor-pointer bg-pg-red-button rounded-md p-1" onclick={() => deleteProperty(data.pgProperty.id)}
             formaction={`?/deleteInventory&recordId=${data.pgProperty.id}`}>
             <img src="/icons/delete.svg" alt="delete icon"/>
@@ -91,7 +104,7 @@
         {/each}
     </div>
 
-    {#if window.innerWidth > 1024}
+    {#if windowWidth > 1024}
         <div class="flex justify-end">
             <button onclick={scrollLeft}><img src="/icons/leftArrow.svg" alt="left-arrow"></button>
             <button onclick={scrollRight}><img src="/icons/rightArrow.svg" alt="right-arrow"></button>
@@ -100,7 +113,7 @@
 </div>
 
 
-<div class={window.innerWidth < 1024 ? "mt-3" : ""}>
+<div class={windowWidth < 1024 ? "mt-3" : ""}>
     <p class="text-base font-medium leading-normal line-clamp-1">name</p>
     <p class="text-pg-sky-text text-sm font-normal leading-normal line-clamp-2">{data.pgProperty.pgName}</p>
 </div>
@@ -175,18 +188,34 @@
     </div>
 {/if}
 
-<!-- T ODO: need to check if the user logged is the ower of currently showing pg property then we need show the contents-->
-{#if true} 
-    <button class="mt-5 bg-pg-sky text-white px-4 py-2 rounded-md w-full flex items-center justify-center gap-1 cursor-pointer"
-        onclick={() => goto("/pgForm", {state: {propertyData: data.pgProperty}})}
-    >
-        <div>edit property</div> 
-        <img src="/icons/edit.svg" alt="edit Icon" />
-    </button>
-{:else}
-    <button class="mt-5 bg-pg-sky text-white px-4 py-2 rounded-md w-full cursor-pointer">book rooms</button>
-{/if}
+<form method="POST" use:enhance={handlePropertyActions}>
+    <div class="flex justify-between gap-3">
+        {#if data.isCurrentUserOwner}
+            <button class="mt-5 bg-pg-sky text-white px-4 py-2 rounded-md w-full flex items-center justify-center gap-1 cursor-pointer"
+                onclick={() => goto("/pgForm", {state: {propertyData: data.pgProperty}})}
+            >
+                <div>edit property</div> 
+                <img src="/icons/edit.svg" alt="edit Icon" />
+            </button>
+        {:else}
+            <button class="mt-5 bg-pg-sky text-white px-4 py-2 rounded-md w-full flex items-center justify-center gap-1 cursor-pointer"
+                formaction={`?/addInventoryToFavorites&recordId=${data.pgProperty.id}`}
+            >
+                <div>add to favorite</div> 
+                <img src="/icons/favorite.svg" alt="favorite Icon" />
+            </button>
+        {/if}
 
+        <button class="mt-5 bg-pg-sky text-white px-4 py-2 rounded-md w-full flex items-center justify-center gap-1 cursor-pointer"
+            onclick={() => goto("/pgForm", {state: {propertyData: data.pgProperty}})}
+        >
+            <div>book room</div> 
+            <img src="/icons/bookRoom.svg" alt="bookRoom Icon" />
+            
+        </button>
+    </div>
+</form>
+    
 <style>
     :global(#map > div:first-child + div) {
         display: none !important;

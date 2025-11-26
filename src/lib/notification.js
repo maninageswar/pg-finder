@@ -11,7 +11,7 @@ export const success = m => toast.push(m, {
 export const warning = m => toast.push(m, { 
     theme: { 
     '--toastBorder': '2px solid rgba(255, 193, 7, 1)',
-    '--toastColor': 'rgba(255, 193, 7, 1)',
+    '--toastColor': 'oklch(0.74 0.19 62.93)',
     '--toastBarHeight': 0
 } })
 

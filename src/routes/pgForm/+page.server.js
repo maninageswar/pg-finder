@@ -19,14 +19,20 @@ async function prepareFormData(request) {
 }
 
 export const actions = {
-  createInventory: async ({ request }) => {
+  createInventory: async ({ request, locals }) => {
     const pb = await authPocketBaseInstanceWithPassword();
     const formData = await prepareFormData(request);
     if (formData.get('pgRefundableDeposit') > formData.get('pgDepositAmount')) {
       return fail(400, { errors: { pgRefundableDeposit : { message : "refundable amount cannot be greater than deposite" }}});
     }
     try {
+      // create a new property in the pgProperties collection
       const record = await pb.collection("pgProperties").create(formData);
+
+      // update the new proerty id in the user's pgProperties field
+      let pgPropertyIdsList = locals.user.pgPropertyId || [];
+      pgPropertyIdsList.push(record.id);
+      await locals.pb.collection('users').update(locals.user.id, { isOwner : true, pgPropertyId : pgPropertyIdsList });
       return { propertyCreated : 'your property details have been saved successfully you can veiw it once the verification of the property is done'};
     } catch (error) {
       console.error("Failed to create record:",error.response?.data);

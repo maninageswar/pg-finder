@@ -14,6 +14,8 @@
     import { success, failure } from '$lib/notification';
     import { preventKeyPress } from '$lib/utils/sharedlogic';
 
+    let { data } = $props();
+
     const pgType = ['gents', 'ladies', 'co-live'];
 
     const states = [
@@ -66,11 +68,10 @@
     let imageFiles = $state([]);
     let pgAmenitiesValues = $state([]);
     let formElement;
+    let sharingTypesWithHigherDailyRent = $state([]);
 
     // getting page state data from pgProperty view page
     let pgFormPageData = $page.state || "";
-
-    console.log('pgFormPageData',pgFormPageData)
 
     selectedRoomTypes = pgFormPageData.propertyData?.pgRoomTypes || [];
     noOfFloors = pgFormPageData.propertyData?.pgNoOfFloors || "";
@@ -270,6 +271,23 @@
         }
     }
 
+    function checkDailyRentGreaterThanMonthlyRent() {
+        const formData = new FormData(formElement);
+        for (let i = 1; i <= selectedRoomTypes.length; i++) {
+            const monthlyRent = Number(formData.get(`sharing${i}Rent`));
+            const dailyRent = Number(formData.get(`sharing${i}PerDayRent`));
+            if ((monthlyRent > 0 && dailyRent > 0) && dailyRent >= monthlyRent) {
+                if (!sharingTypesWithHigherDailyRent.includes(`sharing${i}PerDayRent`)) {
+                    sharingTypesWithHigherDailyRent.push(`sharing${i}PerDayRent`);
+                }
+            } else {
+                sharingTypesWithHigherDailyRent = sharingTypesWithHigherDailyRent.filter(
+                    item => item !== `sharing${i}PerDayRent`
+                );
+            }
+        }
+    }
+
 </script>
 
 <!-- snippets -->
@@ -317,11 +335,11 @@
 
     <h3 class="mb-2">owner details</h3>
 
-    {@render Input(true, "ownerName", "text", "name", pgFormPageData.propertyData?.ownerName)}
+    {@render Input(true, "ownerName", "text", "name", pgFormPageData.propertyData?.ownerName || data.user?.name)}
 
     {@render Input(true, "ownerNumber", "number", "mobile", pgFormPageData.propertyData?.ownerNumber)}
 
-    {@render Input(true, "ownerEmail", "email", "email", pgFormPageData.propertyData?.ownerEmail)}
+    {@render Input(true, "ownerEmail", "email", "email", pgFormPageData.propertyData?.ownerEmail || data.user?.email)}
 
     <!-- pg details -->
 
@@ -384,18 +402,23 @@
             <div class="basis-1/3"><label for={selectedRoomType.replace(" ", "-")}>{selectedRoomType}</label><span class="text-red-500">*</span></div><span>:</span>
             <input type="number" id={selectedRoomType} name="{`${selectedRoomType.replace(" ", "")}Rent`}" 
                 onkeydown={(e) => preventKeyPress(e, ['e', ' ', '+', '-', '.'])}
+                onblur={checkDailyRentGreaterThanMonthlyRent}
                 value={pgFormPageData?.propertyData ? pgFormPageData?.propertyData[`${selectedRoomType.replace(" ", "")}Rent`] : "" } 
                 class="w-2/4 mt-1 mb-4 border border-pg-sky rounded-md focus:border-pg-sky"
                 placeholder="monthly rent"
                 required/>
-            <input type="number" name="{`${selectedRoomType.replace(" ", "")}PerDayRent`}" 
+            <input type="number" name="{`${selectedRoomType.replace(" ", "")}PerDayRent`}"
                 onkeydown={(e) => preventKeyPress(e, ['e', ' ', '+', '-', '.'])}
+                onblur={checkDailyRentGreaterThanMonthlyRent}
                 value={pgFormPageData?.propertyData ? pgFormPageData?.propertyData[`${selectedRoomType.replace(" ", "")}PerDayRent`] : "" } 
-                class="w-2/4 mt-1 mb-4 border border-pg-sky rounded-md focus:border-pg-sky"
+                class="w-2/4 mt-1 mb-4 border rounded-md
+                {sharingTypesWithHigherDailyRent.includes(`${selectedRoomType.replace(" ", "")}PerDayRent`) ? "border-pg-red focus:border-pg-red" : "border-pg-sky focus:border-pg-sky"}"
                 placeholder="perday rent"
                 required/>
         </div>
      {/each}
+
+    <div class="text-pg-red text-sm {sharingTypesWithHigherDailyRent.length > 0 ? "mb-3" : "hidden"}">per day rent cannot be greater than or equal to monthly rent</div>
 
     <div class="flex gap-4">
         <div>

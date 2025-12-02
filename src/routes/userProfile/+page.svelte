@@ -94,7 +94,7 @@
 
 <div class="flex items-center justify-between mb-5">
     <h2 class="font-Manrope">user profile</h2>
-    <form method="POST" use:enhance>
+    <form method="POST" use:enhance={handleSubmit}>
         <button class="cursor-pointer bg-pg-sky rounded-md p-1 pl-2"
             formaction="?/logout">
             <img src="/icons/logout.svg" alt="logout icon"/>
@@ -128,9 +128,9 @@
     <div class="border-3 border-pg-sky-light {formErrors?.email ? "mt-4" : ""}
         {editingProfile ? (formErrors?.mobileNumber ? "has-[:focus]:border-pg-red-button" : "has-[:focus]:border-pg-sky") : "shadow-xl"}
         rounded-full h-16 {formErrors?.mobileNumber ? "mb-1" : "mb-6"} flex items-center px-6 relative">
-        <label for="mobileNumber" class="absolute bottom-12 text-xl">mobile no<span class="text-red-500 {!editingProfile ? 'hidden' : ''}">*</span></label>
+        <label for="mobileNumber" class="absolute bottom-12 text-xl">mobile no.<span class="text-red-500 {!editingProfile ? 'hidden' : ''}">*</span></label>
         <input class="w-full font-Manrope text-pg-sky-text text-lg border-none focus:ring-0 p-0" 
-            readonly={!editingProfile} name="mobileNumber" value={data.userProfile.mobileNumber || ""} placeholder={!data.userProfile.mobileNumber ? 'please update your mobile number' : ''} type="number"
+            readonly={!editingProfile} name="mobileNumber" value={data.userProfile.mobileNumber || ""} placeholder='please update your mobile number' type="number"
             oninput={validateMobileNumber}
             onwheel={(e) => e.target.blur()}
             onkeydown={(e) => { preventKeyPress(e, ['e', ' ', '+', '-', '.'])}}>
@@ -140,9 +140,9 @@
     <div class="border-3 border-pg-sky-light {formErrors?.mobileNumber ? "mt-4" : ""}
         {editingProfile ? (formErrors?.emergencyContactNumber ? "has-[:focus]:border-pg-red-button" : "has-[:focus]:border-pg-sky") : "shadow-xl"}
         rounded-full h-16 {formErrors?.emergencyContactNumber ? "mb-1" : "mb-6"} flex items-center px-6 relative">
-        <label for="emergencyContactNumber" class="absolute bottom-12 text-xl">emergency contact no<span class="text-red-500 {!editingProfile ? 'hidden' : ''}">*</span></label>
+        <label for="emergencyContactNumber" class="absolute bottom-12 text-xl">{data.isCurrentUserOwner ? "alternate no.": "emergency contact no."}<span class="text-red-500 {!editingProfile ? 'hidden' : ''}">*</span></label>
         <input class="w-full font-Manrope text-pg-sky-text text-lg border-none focus:ring-0 p-0"
-            readonly={!editingProfile} name="emergencyContactNumber" value={data.userProfile.emergencyContactNumber || null} placeholder={!data.userProfile.mobileNumber ? 'please update emergency contact number' : ''} type="number"
+            readonly={!editingProfile} name="emergencyContactNumber" value={data.userProfile.emergencyContactNumber || null} placeholder={data.isCurrentUserOwner ? 'please update alternate contact number' : 'please update emergency contact number'} type="number"
             oninput={validateMobileNumber}
             onwheel={(e) => e.target.blur()}
             onkeydown={(e) => { preventKeyPress(e, ['e', ' ', '+', '-', '.'])}}>

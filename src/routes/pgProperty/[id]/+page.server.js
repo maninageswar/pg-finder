@@ -1,5 +1,3 @@
-import { authPocketBaseInstanceWithPassword } from '$lib/server/pocketbase/pocketbase.js';
-
 let isCurrentUserOwner = false
 let userFavoriteProperties = []
 
@@ -8,9 +6,8 @@ export async function load({ params, locals }) {
     if (locals?.user && locals.user.pgPropertyId.includes(params.id) && locals.user.isOwner) {
        isCurrentUserOwner = true
     } else isCurrentUserOwner = false;
-    const pb = await authPocketBaseInstanceWithPassword();
     try {
-        const pgProperty = await pb.collection('pgProperties').getFirstListItem(`id="${params.id}"`)
+        const pgProperty = await locals.pb.collection('pgProperties').getFirstListItem(`id="${params.id}"`)
         console.log('isCurrentUserOwner',isCurrentUserOwner)
         return {
             pgProperty, isCurrentUserOwner
@@ -25,16 +22,16 @@ export async function load({ params, locals }) {
 }
 
 export const actions = {
-    deleteInventory: async ({ url }) => {
+    deleteInventory: async ({ url, locals }) => {
+        if (!isCurrentUserOwner) return { deleteInventory: 'you are not authorized to deleted this property' };
         const propertyId = url.searchParams.get("recordId");
         try {
-            const pb = await authPocketBaseInstanceWithPassword();
-            await pb.collection('pgProperties').delete(propertyId);
+            await locals.pb.collection('pgProperties').delete(propertyId);
             return { propertyDeleted : 'your property has been deleted successfully'};
         } catch (error) {
             // TO DO: handle error properly
-            console.error("Failed to delete record:",error.response?.data);
-            return fail(400, { errors: error.response?.data });
+            console.error("Failed to delete record:",error.response?.message);
+            return fail(400, { errors: error.response?.message });
         }
     },
 

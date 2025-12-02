@@ -1,14 +1,12 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { authPocketBaseInstanceWithPassword } from '$lib/server/pocketbase/pocketbase.js';
-
 
 let userId = null;
 export async function load({ params, locals }) {
     if (locals.user) {
        userId = locals.user.id
-       return { userProfile: locals.user};
+       return { userProfile: locals.user, isCurrentUserOwner: locals.user.isOwner };
     } else {
-        throw redirect(303, '/auth/login');
+        throw redirect(303, '/auth/login?authRequired=true');
     }
 }
 

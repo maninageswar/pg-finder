@@ -2,6 +2,7 @@
     import { enhance } from '$app/forms';
     import { success, failure } from '$lib/notification';
     import { onMount } from 'svelte';
+    import { page } from '$app/stores';
 
     let { data, form } = $props();
 
@@ -20,6 +21,10 @@
     $effect(()=>{
         if (form?.error) {
             failure('invalid email or password. please check');
+        }
+        console.log('authRequired',$page.url.searchParams.get('authRequired'))
+        if($page.url.searchParams.get('authRequired')) {
+            failure('your are not logged in. please login');
         }
     })
 

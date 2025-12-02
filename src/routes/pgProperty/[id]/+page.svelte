@@ -1,12 +1,11 @@
 <script>
     import { PUBLIC_GOOGLE_MAP_API_KEY, PUBLIC_POCKETBASE_REST_API } from '$env/static/public';
     import { goto } from "$app/navigation";
-    import { page } from '$app/state';
     import { enhance } from '$app/forms';
     import { onMount } from 'svelte';
     import * as gmapsLoader from '@googlemaps/js-api-loader';
     const { Loader } = gmapsLoader;
-    import { success, warning } from '$lib/notification'
+    import { failure, success, warning } from '$lib/notification'
 
     let { data } = $props();
     let mapElement;
@@ -70,6 +69,9 @@
                 success(result.data?.propertyDeleted);
                 goto('/');
             }
+            if (result.data?.deleteInventory) {
+                failure(result.data?.deleteInventory);
+            }
         }
     }
 
@@ -86,12 +88,14 @@
 
 <div class="flex items-center justify-between mb-5">
     <h2 class="font-Manrope">pg information</h2>
-    <form method="POST" use:enhance={handlePropertyActions}>
-        <button class="cursor-pointer bg-pg-red-button rounded-md p-1" onclick={() => deleteProperty(data.pgProperty.id)}
-            formaction={`?/deleteInventory&recordId=${data.pgProperty.id}`}>
-            <img src="/icons/delete.svg" alt="delete icon"/>
-        </button>
-    </form>
+    {#if data.isCurrentUserOwner}
+        <form method="POST" use:enhance={handlePropertyActions}>
+            <button class="cursor-pointer bg-pg-red-button rounded-md p-1" onclick={() => deleteProperty(data.pgProperty.id)}
+                formaction={`?/deleteInventory&recordId=${data.pgProperty.id}`}>
+                <img src="/icons/delete.svg" alt="delete icon"/>
+            </button>
+        </form>
+    {/if}
 </div>
 
 <div class="relative w-full">
@@ -161,10 +165,10 @@
 <h2 class="mt-5 mb-5 font-Manrope">pg amenities</h2>
 
 <div class="mt-3 grid grid-cols-2 gap-3 *:border *:border-pg-sky *:h-[60px] *:rounded-xl *:shadow-sm">
-    {#each data.pgProperty.pgAmenities as pgAmenities}
-        <div class="p-2 flex items-center gap-1">
-            <img src="/icons/{pgAmenities}.svg" alt="">
-            <p class="text-sm font-normal leading-normal">{pgAmenitiesLabels[pgAmenities]}</p>
+    {#each data.pgProperty.pgAmenities as pgAmenitie}
+        <div class="p-2 flex items-center gap-2">
+            <img src="/icons/{pgAmenitie}.svg" alt="pg amenity icon"/>
+            <p class="text-sm font-normal leading-normal truncate">{pgAmenitiesLabels[pgAmenitie]}</p>
         </div>
     {/each}
 </div>

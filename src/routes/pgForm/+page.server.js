@@ -1,5 +1,4 @@
 import { fail } from '@sveltejs/kit';
-import { authPocketBaseInstanceWithPassword } from '$lib/server/pocketbase/pocketbase.js';
 
 async function prepareFormData(request) {
   const formData = await request.formData();
@@ -20,14 +19,13 @@ async function prepareFormData(request) {
 
 export const actions = {
   createInventory: async ({ request, locals }) => {
-    const pb = await authPocketBaseInstanceWithPassword();
     const formData = await prepareFormData(request);
     if (formData.get('pgRefundableDeposit') > formData.get('pgDepositAmount')) {
       return fail(400, { errors: { pgRefundableDeposit : { message : "refundable amount cannot be greater than deposite" }}});
     }
     try {
       // create a new property in the pgProperties collection
-      const record = await pb.collection("pgProperties").create(formData);
+      const record = await locals.pb.collection("pgProperties").create(formData);
 
       // update the new proerty id in the user's pgProperties field
       let pgPropertyIdsList = locals.user.pgPropertyId || [];
@@ -40,14 +38,13 @@ export const actions = {
     }
   },
 
-  updateInventory: async ({ request, url }) => {
-    const pb = await authPocketBaseInstanceWithPassword();
+  updateInventory: async ({ request, url, locals }) => {
     const formData = await prepareFormData(request);
     if (formData.get('pgRefundableDeposit') > formData.get('pgDepositAmount')) {
       return fail(400, { errors: { pgRefundableDeposit : { message : "refundable amount cannot be greater than deposite" }}});
     }
     try {
-      const record = await pb.collection("pgProperties").update(url.searchParams.get("recordId"), formData);
+      const record = await locals.pb.collection("pgProperties").update(url.searchParams.get("recordId"), formData);
       console.log("Record updated:", record);
       return { propertyUpdated : 'your property details have been updated successfully'};
     } catch (error) {

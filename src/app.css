@@ -12,8 +12,10 @@
     --color-pg-red: oklch(63.7% 0.237 25.331);
     --color-pg-red-button: oklch(70.4% 0.191 22.216);
     --color-pg-sky-button-disabled: #95d1ece6;
+    --color-pg-sky-input-disabled: #d7ecf6e6;
     --color-pg-sky-light:#93deffe6;
     --color-pg-sky-text:#4b819b;
+    --color-favorite-page-default-image-bgcolor:#92dcf9;
     --font-Manrope: Manrope, sans-serif;
 }
 

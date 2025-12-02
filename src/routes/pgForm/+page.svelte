@@ -13,7 +13,7 @@
     import { goto } from "$app/navigation";
     import { success, failure } from '$lib/notification';
     import { preventKeyPress } from '$lib/utils/sharedlogic';
-
+    
     let { data } = $props();
 
     const pgType = ['gents', 'ladies', 'co-live'];
@@ -239,6 +239,7 @@
 
     const handleSubmit = ({ formData }) => {
     formData.delete("pgImages");
+    console.log('formData in handle submit',formData.get("ownerEmail"))
     for(let i=0; i < imageFiles.length; i++) {
         formData.append('pgImages',imageFiles[i])
     }
@@ -291,12 +292,13 @@
 </script>
 
 <!-- snippets -->
-{#snippet Input(required,name,type,label,bindValue='',placeholder='')}
+{#snippet Input({required=false, name='', type="text", label="", bindValue='',placeholder='',readonly=false})}
     <label for={name}>{label}</label><span class="text-red-500 {!required ? 'hidden' : ''}">*</span>
     <input {type} id={name} {name} {placeholder} value={bindValue} {required}
         onwheel={(e) => e.target.blur()}
         onkeydown={(e) => { if (type == 'number') preventKeyPress(e, ['e', ' ', '+', '-', '.'])}}
-        class="w-full mt-1 mb-4 border border-pg-sky rounded-md"/>
+        {readonly}
+        class="w-full mt-1 mb-4 border border-pg-sky rounded-md {readonly ? "bg-pg-sky-input-disabled cursor-not-allowed" : ""}"/>
 {/snippet}
 
 {#snippet MyCheckbox({ value, label })}
@@ -335,33 +337,33 @@
 
     <h3 class="mb-2">owner details</h3>
 
-    {@render Input(true, "ownerName", "text", "name", pgFormPageData.propertyData?.ownerName || data.user?.name)}
+    {@render Input({required:true, name:"ownerName", type:"text", label:"name", bindValue:pgFormPageData.propertyData?.ownerName, placeholder:"enter owner's name"})}
 
-    {@render Input(true, "ownerNumber", "number", "mobile", pgFormPageData.propertyData?.ownerNumber)}
+    {@render Input({required:true, name:"ownerNumber", type:"number", label:"mobile", bindValue:pgFormPageData.propertyData?.ownerNumber, placeholder:"enter owner's mobile no."})}
 
-    {@render Input(true, "ownerEmail", "email", "email", pgFormPageData.propertyData?.ownerEmail || data.user?.email)}
+    {@render Input({required:true, name:"ownerEmail", type:"email", label:"email", bindValue:(pgFormPageData.propertyData?.ownerEmail || data.user?.email), readonly:true})}
 
     <!-- pg details -->
 
     <h3 class="mt-5 mb-2">pg details</h3>
 
-    {@render Input(true, "pgName", "text", "name", pgFormPageData.propertyData?.pgName)}
+    {@render Input({required:true, name:"pgName", type:"text", label:"name", bindValue:pgFormPageData.propertyData?.pgName})}
 
     <label for="pgAddress">address</label><span class="text-red-500">*</span>
     <textarea id="pgAddress" name="pgAddress" rows="3" cols="40" value={pgFormPageData.propertyData?.pgAddress} required class="w-full mt-1 mb-4 border border-pg-sky rounded-md focus:border-pg-sky" placeholder="enter address"></textarea>
 
-    {@render Input(true, "pgCity", "text", "city/district/town", pgFormPageData.propertyData?.pgCity)}
+    {@render Input({required:true, name:"pgCity", type:"text", label:"city/district/town", bindValue:pgFormPageData.propertyData?.pgCity})}
 
-    {@render Input(false, "pgLandmark", "text", "landmark", pgFormPageData.propertyData?.pgLandmark)}
+    {@render Input({required:false, name:"pgLandmark", type:"text", label:"landmark", bindValue:pgFormPageData.propertyData?.pgLandmark})}
 
     <label for="pgState">state</label><span class="text-red-500">*</span>
     <div class="mt-1 mb-4">
         <Select items={states} required={true} name="pgState" placeholder='please select' value={pgFormPageData.propertyData?.pgState} on:change={checkFormDataInEditModeIsEqualToViewPageData}/>
     </div>
 
-    {@render Input(true, "pgPincode", "number", "pincode", pgFormPageData.propertyData?.pgPincode)}
+    {@render Input({required:true, name:"pgPincode", type:"number", label:"pincode", bindValue:pgFormPageData.propertyData?.pgPincode})}
     
-    {@render Input(true, "pgLocation", "url", "location", pgFormPageData.propertyData?.pgLocation, "please provide the location link")}
+    {@render Input({required:true, name:"pgLocation", type:"url", label:"location", bindValue:pgFormPageData.propertyData?.pgLocation, placeholder:"please provide the location link"})}
 
     <div class="flex gap-4 mt-1 {refundableDepositeAmount > depositeAmount ? "mb-2" : "mb-4"}">
         <div>
@@ -403,6 +405,7 @@
             <input type="number" id={selectedRoomType} name="{`${selectedRoomType.replace(" ", "")}Rent`}" 
                 onkeydown={(e) => preventKeyPress(e, ['e', ' ', '+', '-', '.'])}
                 onblur={checkDailyRentGreaterThanMonthlyRent}
+                onwheel={(e) => e.target.blur()}
                 value={pgFormPageData?.propertyData ? pgFormPageData?.propertyData[`${selectedRoomType.replace(" ", "")}Rent`] : "" } 
                 class="w-2/4 mt-1 mb-4 border border-pg-sky rounded-md focus:border-pg-sky"
                 placeholder="monthly rent"
@@ -410,6 +413,7 @@
             <input type="number" name="{`${selectedRoomType.replace(" ", "")}PerDayRent`}"
                 onkeydown={(e) => preventKeyPress(e, ['e', ' ', '+', '-', '.'])}
                 onblur={checkDailyRentGreaterThanMonthlyRent}
+                onwheel={(e) => e.target.blur()}
                 value={pgFormPageData?.propertyData ? pgFormPageData?.propertyData[`${selectedRoomType.replace(" ", "")}PerDayRent`] : "" } 
                 class="w-2/4 mt-1 mb-4 border rounded-md
                 {sharingTypesWithHigherDailyRent.includes(`${selectedRoomType.replace(" ", "")}PerDayRent`) ? "border-pg-red focus:border-pg-red" : "border-pg-sky focus:border-pg-sky"}"
@@ -425,6 +429,7 @@
             <label for="pgNoOfFloors">no. of floors</label><span class="text-red-500">*</span>
             <input type="number" id="pgNoOfFloors" name="pgNoOfFloors" bind:value={noOfFloors} required oninput={calculateRoomNumbers} 
                 onkeydown={(e) => preventKeyPress(e, ['e', ' ', '+', '-', '.'])}
+                onwheel={(e) => e.target.blur()}
                 class="w-full mt-1 mb-4 border border-pg-sky rounded-md focus:border-pg-sky"/>
         </div>
         
@@ -432,6 +437,7 @@
             <label for="pgNoOfRoomsInEachFloor">no. of rooms in each floor</label><span class="text-red-500">*</span>
             <input type="number" id="pgNoOfRoomsInEachFloor" name="pgNoOfRoomsInEachFloor" bind:value={noOfRoomsInEachFloor} required oninput={calculateRoomNumbers}
                 onkeydown={(e) => preventKeyPress(e, ['e', ' ', '+', '-', '.'])}
+                onwheel={(e) => e.target.blur()}
                 class="w-full mt-1 mb-4 border border-pg-sky rounded-md focus:border-pg-sky"/>
         </div>
     </div>

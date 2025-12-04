@@ -12,6 +12,7 @@
     let row;
     let windowWidth = $state(0)
     console.log('data.pgProperty',data.pgProperty)
+    let isInventoryInFavorites = $state(data.isInventoryInFavorites);
 
     const pgAmenitiesLabels = {
         studyTableChair: "study table & chair",
@@ -59,6 +60,9 @@
                 warning(result.data?.notLoggedIn);
                 goto('/auth/login');
             }
+            if (result.data?.removedInventoryFromFavorites) {
+                success(result.data?.removedInventoryFromFavorites);
+            }
             if (result.data?.addedInventoryToFavorites) {
                 success(result.data?.addedInventoryToFavorites);
             }
@@ -86,17 +90,24 @@
 
 <svelte:window bind:innerWidth={windowWidth} />
 
-<div class="flex items-center justify-between mb-5">
-    <h2 class="font-Manrope">pg information</h2>
-    {#if data.isCurrentUserOwner}
-        <form method="POST" use:enhance={handlePropertyActions}>
+<form method="POST" use:enhance={handlePropertyActions}>
+    <div class="flex items-center justify-between mb-5">
+        <h2 class="font-Manrope">pg information</h2>
+        {#if data.isCurrentUserOwner}
             <button class="cursor-pointer bg-pg-red-button rounded-md p-1" onclick={() => deleteProperty(data.pgProperty.id)}
-                formaction={`?/deleteInventory&recordId=${data.pgProperty.id}`}>
+                formaction="?/deleteInventory">
                 <img src="/icons/delete.svg" alt="delete icon"/>
             </button>
-        </form>
-    {/if}
-</div>
+        {:else}
+            <button class="cursor-pointer"
+                onclick={() => isInventoryInFavorites = !isInventoryInFavorites}
+                formaction="?/{!isInventoryInFavorites ? 'removeInventoryFromFavorites' : 'addInventoryToFavorites'}"
+            >
+                <img src="/icons/{isInventoryInFavorites ? "favoriteFilled" : "favoriteLine"}.svg" alt="favorite Icon" height="27px" width="27px"/>
+            </button>
+        {/if}
+    </div>
+</form>
 
 <div class="relative w-full">
     <div class="flex gap-4 overflow-x-auto scroll-smooth py-2 no-scrollbar" bind:this={row}>
@@ -200,13 +211,6 @@
             >
                 <div>edit property</div> 
                 <img src="/icons/edit.svg" alt="edit Icon" />
-            </button>
-        {:else}
-            <button class="mt-5 bg-pg-sky text-white px-4 py-2 rounded-md w-full flex items-center justify-center gap-1 cursor-pointer"
-                formaction={`?/addInventoryToFavorites&recordId=${data.pgProperty.id}`}
-            >
-                <div>add to favorite</div> 
-                <img src="/icons/favorite.svg" alt="favorite Icon" />
             </button>
         {/if}
 

@@ -3,7 +3,6 @@ import { redirect } from '@sveltejs/kit';
 export async function load({ locals }) {
     if (!locals.user) { throw redirect(303, '/auth/login?authRequired=true'); }
     let userFavoritesPropertiesList = locals.user.favoriteProperties || [];
-    console.log("userFavoritesPropertiesList", userFavoritesPropertiesList);
     let userFavoritesProperties = [];
     for (const pgId of userFavoritesPropertiesList) {
         try {
@@ -15,7 +14,6 @@ export async function load({ locals }) {
             );
         }
     }
-    console.log("User's favorite properties:", userFavoritesProperties);
     return {
         userFavoritesProperties
     };

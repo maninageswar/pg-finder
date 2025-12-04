@@ -1,7 +1,7 @@
 <script>
     import { PUBLIC_POCKETBASE_REST_API } from '$env/static/public';
 
-    let { property } = $props();
+    let { property , cardTopRightIcon = "favorite", removePropertyFromFvaorites } = $props();
 
     let pgRents = [];
     for (let i = 1; i <= 5; i++) {
@@ -11,7 +11,15 @@
     }
 </script>
 
-<div class="rounded-xl h-78 shadow-xl cursor-pointer">
+<div class="rounded-xl h-78 shadow-xl cursor-pointer relative">
+    <button class="absolute bg-pg-card-action-element-bgcolor hover:cursor-pointer opacity-35 size-6.5 rounded-full right-2 top-2 flex items-center justify-center p-0.5 z-10"
+        onclick={(e)=>{
+            e.stopPropagation();   // stops card click
+            e.preventDefault();   // stops anchor navigation
+            removePropertyFromFvaorites();
+            }}>
+        <img src="/icons/{cardTopRightIcon == "close" ? "closeWhite" : "favoriteWhiteLine"}.svg" alt="close icon">
+    </button>
     <div class="w-full h-[55%]">
         {#if property.pgImages.length > 0}
             <img src="{PUBLIC_POCKETBASE_REST_API}/files/{property.collectionId}/{property.id}/{property.pgImages[0]}" alt="pg" class="w-full h-full rounded-t-xl object-cover "/>

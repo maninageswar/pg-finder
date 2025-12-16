@@ -9,7 +9,7 @@
 
 <SvelteToast options={{ reversed: false, intro: { y: -200 } }}/>
 
-<div class="px-4 pt-4">
+<div class="px-4 pt-4 overflow-x-hidden">
 	{@render children()}
 </div>
 

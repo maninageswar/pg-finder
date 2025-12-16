@@ -71,18 +71,21 @@
     let sharingTypesWithHigherDailyRent = $state([]);
 
     // getting page state data from pgProperty view page
-    let pgFormPageData = $page.state || "";
 
-    selectedRoomTypes = pgFormPageData.propertyData?.pgRoomTypes || [];
-    noOfFloors = pgFormPageData.propertyData?.pgNoOfFloors || "";
-    noOfRoomsInEachFloor = pgFormPageData.propertyData?.pgNoOfRoomsInEachFloor || "";
-    depositeAmount = pgFormPageData.propertyData?.pgDepositAmount || 0;
-    refundableDepositeAmount = pgFormPageData.propertyData?.pgRefundableDeposit || 0;
-    pgAmenitiesValues = pgFormPageData.propertyData?.pgAmenities || [];
+    let propertyData = JSON.parse(sessionStorage.getItem('propertyData'));
+
+    console.log('pgFormPageData in pgForm page', propertyData);
+
+    selectedRoomTypes = propertyData?.pgRoomTypes || [];
+    noOfFloors = propertyData?.pgNoOfFloors || "";
+    noOfRoomsInEachFloor = propertyData?.pgNoOfRoomsInEachFloor || "";
+    depositeAmount = propertyData?.pgDepositAmount || 0;
+    refundableDepositeAmount = propertyData?.pgRefundableDeposit || 0;
+    pgAmenitiesValues = propertyData?.pgAmenities || [];
 
     let updateButtonDisabled = $state(true);
 
-    const pgFormPageDataToCompare = { ...pgFormPageData?.propertyData };
+    const pgFormPageDataToCompare = { ...propertyData };
     delete pgFormPageDataToCompare.collectionId;
     delete pgFormPageDataToCompare.collectionName;
     delete pgFormPageDataToCompare.created;
@@ -90,33 +93,33 @@
     delete pgFormPageDataToCompare.updated;
 
     onMount(async () => {
-		if (pgFormPageData?.propertyData) {
-            const assignedRooms = pgFormPageData?.propertyData.sharing1Rooms?.concat(
-                                  pgFormPageData?.propertyData.sharing2Rooms || [],
-                                  pgFormPageData?.propertyData.sharing3Rooms || [],
-                                  pgFormPageData?.propertyData.sharing4Rooms || [],
-                                  pgFormPageData?.propertyData.sharing5Rooms || [] ) || [];
+		if (propertyData) {
+            const assignedRooms = propertyData.sharing1Rooms?.concat(
+                                  propertyData.sharing2Rooms || [],
+                                  propertyData.sharing3Rooms || [],
+                                  propertyData.sharing4Rooms || [],
+                                  propertyData.sharing5Rooms || [] ) || [];
             calculateRoomNumbers()
             if (assignedRooms.length > 0) {
                 roomNumbers = roomNumbers.filter(room => !assignedRooms.includes(room));
             }
 
-            if (pgFormPageData?.propertyData.pgImages.length > 0) {
-                await fetchImages(pgFormPageData?.propertyData.pgImages)
+            if (propertyData.pgImages.length > 0) {
+                await fetchImages(propertyData.pgImages)
             }
         }
 	});
 
     $effect(() => {
         pgAmenitiesValues
-        if (pgFormPageData?.propertyData) {
+        if (propertyData) {
             checkFormDataInEditModeIsEqualToViewPageData()
         }
     });
 
     async function fetchImages(pgImages) {
         for (const fileName of pgImages) {
-            const url = `${PUBLIC_POCKETBASE_REST_API}/files/${pgFormPageData?.propertyData.collectionId}/${pgFormPageData?.propertyData.id}/${fileName}`;
+            const url = `${PUBLIC_POCKETBASE_REST_API}/files/${propertyData.collectionId}/${propertyData.id}/${fileName}`;
             const res = await fetch(url);
             const blob = await res.blob();
             const file = new File([blob], fileName.replace(/_[^_]+(?=\.[^.]+$)/, ''), { type: blob.type });
@@ -153,24 +156,24 @@
     function handleFiles(event) {
         const files = Array.from(event.target.files).filter(f => f.type.startsWith('image/'));
         imageFiles.push(...files.filter(f => !imageFiles.includes(f)));
-        if (pgFormPageData?.propertyData) {
+        if (propertyData) {
             checkIfImagesChangedInEditMode()
         }
     }
 
     function removeFile(index) {
         imageFiles.splice(index, 1);
-        if (pgFormPageData?.propertyData) {
+        if (propertyData) {
             checkIfImagesChangedInEditMode()
         }
     }
 
     function checkIfImagesChangedInEditMode() {
-        if (pgFormPageData.propertyData?.pgImages.length != imageFiles.length) {
+        if (propertyData?.pgImages.length != imageFiles.length) {
             updateButtonDisabled = false
         } else {
             for (const file of imageFiles) {
-                let formattedPgImageNames = pgFormPageData.propertyData?.pgImages.map(imgName => imgName.replace(/_[^_]+(?=\.[^.]+$)/, ''));
+                let formattedPgImageNames = propertyData?.pgImages.map(imgName => imgName.replace(/_[^_]+(?=\.[^.]+$)/, ''));
                 if (!formattedPgImageNames.includes(file.name)) {
                     updateButtonDisabled = false
                     return
@@ -180,7 +183,7 @@
     }
 
     function checkFormDataInEditModeIsEqualToViewPageData() {
-        if (pgFormPageData?.propertyData) {
+        if (propertyData) {
             tick().then(() => {
                 const formDataObjInEdit = Object.fromEntries(new FormData(formElement).entries());
                 formDataObjInEdit.pgAmenities = Object.values(pgAmenitiesValues);
@@ -252,7 +255,7 @@
             }
             if (result.data?.propertyUpdated) {
                 success(result.data?.propertyUpdated);
-                goto(`/pgProperty/${pgFormPageData?.propertyData.id}`)
+                goto(`/pgProperty/${propertyData.id}`)
             }
         }
         if (result.type === 'failure') {
@@ -337,33 +340,33 @@
 
     <h3 class="mb-2">owner details</h3>
 
-    {@render Input({required:true, name:"ownerName", type:"text", label:"name", bindValue:pgFormPageData.propertyData?.ownerName, placeholder:"enter owner's name"})}
+    {@render Input({required:true, name:"ownerName", type:"text", label:"name", bindValue:propertyData?.ownerName, placeholder:"enter owner's name"})}
 
-    {@render Input({required:true, name:"ownerNumber", type:"number", label:"mobile", bindValue:pgFormPageData.propertyData?.ownerNumber, placeholder:"enter owner's mobile no."})}
+    {@render Input({required:true, name:"ownerNumber", type:"number", label:"mobile", bindValue:propertyData?.ownerNumber, placeholder:"enter owner's mobile no."})}
 
-    {@render Input({required:true, name:"ownerEmail", type:"email", label:"email", bindValue:(pgFormPageData.propertyData?.ownerEmail || data.user?.email), readonly:true})}
+    {@render Input({required:true, name:"ownerEmail", type:"email", label:"email", bindValue:(propertyData?.ownerEmail || data.user?.email), readonly:true})}
 
     <!-- pg details -->
 
     <h3 class="mt-5 mb-2">pg details</h3>
 
-    {@render Input({required:true, name:"pgName", type:"text", label:"name", bindValue:pgFormPageData.propertyData?.pgName})}
+    {@render Input({required:true, name:"pgName", type:"text", label:"name", bindValue:propertyData?.pgName})}
 
     <label for="pgAddress">address</label><span class="text-red-500">*</span>
-    <textarea id="pgAddress" name="pgAddress" rows="3" cols="40" value={pgFormPageData.propertyData?.pgAddress} required class="w-full mt-1 mb-4 border border-pg-sky rounded-md focus:border-pg-sky" placeholder="enter address"></textarea>
+    <textarea id="pgAddress" name="pgAddress" rows="3" cols="40" value={propertyData?.pgAddress} required class="w-full mt-1 mb-4 border border-pg-sky rounded-md focus:border-pg-sky" placeholder="enter address"></textarea>
 
-    {@render Input({required:true, name:"pgCity", type:"text", label:"city/district/town", bindValue:pgFormPageData.propertyData?.pgCity})}
+    {@render Input({required:true, name:"pgCity", type:"text", label:"city/district/town", bindValue:propertyData?.pgCity})}
 
-    {@render Input({required:false, name:"pgLandmark", type:"text", label:"landmark", bindValue:pgFormPageData.propertyData?.pgLandmark})}
+    {@render Input({required:false, name:"pgLandmark", type:"text", label:"landmark", bindValue:propertyData?.pgLandmark})}
 
     <label for="pgState">state</label><span class="text-red-500">*</span>
     <div class="mt-1 mb-4">
-        <Select items={states} required={true} name="pgState" placeholder='please select' value={pgFormPageData.propertyData?.pgState} on:change={checkFormDataInEditModeIsEqualToViewPageData}/>
+        <Select items={states} required={true} name="pgState" placeholder='please select' value={propertyData?.pgState} on:change={checkFormDataInEditModeIsEqualToViewPageData}/>
     </div>
 
-    {@render Input({required:true, name:"pgPincode", type:"number", label:"pincode", bindValue:pgFormPageData.propertyData?.pgPincode})}
+    {@render Input({required:true, name:"pgPincode", type:"number", label:"pincode", bindValue:propertyData?.pgPincode})}
     
-    {@render Input({required:true, name:"pgLocation", type:"url", label:"location", bindValue:pgFormPageData.propertyData?.pgLocation, placeholder:"please provide the location link"})}
+    {@render Input({required:true, name:"pgLocation", type:"url", label:"location", bindValue:propertyData?.pgLocation, placeholder:"please provide the location link"})}
 
     <div class="flex gap-4 mt-1 {refundableDepositeAmount > depositeAmount ? "mb-2" : "mb-4"}">
         <div>
@@ -388,7 +391,7 @@
 
     <label for="pgType">pg type</label><span class="text-red-500">*</span>
     <div class="mt-1 mb-4">
-        <Select items={pgType} required={true} name="pgType" placeholder='please select' value={pgFormPageData.propertyData?.pgType} on:change={checkFormDataInEditModeIsEqualToViewPageData}/>
+        <Select items={pgType} required={true} name="pgType" placeholder='please select' value={propertyData?.pgType} on:change={checkFormDataInEditModeIsEqualToViewPageData}/>
     </div>
     
     <label for="pgType">pg room types</label><span class="text-red-500">*</span>
@@ -406,7 +409,7 @@
                 onkeydown={(e) => preventKeyPress(e, ['e', ' ', '+', '-', '.'])}
                 onblur={checkDailyRentGreaterThanMonthlyRent}
                 onwheel={(e) => e.target.blur()}
-                value={pgFormPageData?.propertyData ? pgFormPageData?.propertyData[`${selectedRoomType.replace(" ", "")}Rent`] : "" } 
+                value={propertyData ? propertyData[`${selectedRoomType.replace(" ", "")}Rent`] : "" } 
                 class="w-2/4 mt-1 mb-4 border border-pg-sky rounded-md focus:border-pg-sky"
                 placeholder="monthly rent"
                 required/>
@@ -414,7 +417,7 @@
                 onkeydown={(e) => preventKeyPress(e, ['e', ' ', '+', '-', '.'])}
                 onblur={checkDailyRentGreaterThanMonthlyRent}
                 onwheel={(e) => e.target.blur()}
-                value={pgFormPageData?.propertyData ? pgFormPageData?.propertyData[`${selectedRoomType.replace(" ", "")}PerDayRent`] : "" } 
+                value={propertyData ? propertyData[`${selectedRoomType.replace(" ", "")}PerDayRent`] : "" } 
                 class="w-2/4 mt-1 mb-4 border rounded-md
                 {sharingTypesWithHigherDailyRent.includes(`${selectedRoomType.replace(" ", "")}PerDayRent`) ? "border-pg-red focus:border-pg-red" : "border-pg-sky focus:border-pg-sky"}"
                 placeholder="perday rent"
@@ -448,7 +451,7 @@
             <div class="mb-4">
                 <label class="inline-block mb-1">{selectedRoomType}</label>
                 <MultiSelect
-                selected={pgFormPageData?.propertyData ? pgFormPageData?.propertyData[`${selectedRoomType.replace(" ", "")}Rooms`] : []}
+                selected={propertyData ? propertyData[`${selectedRoomType.replace(" ", "")}Rooms`] : []}
                 closeDropdownOnSelect = {false}
                 onchange = {checkFormDataInEditModeIsEqualToViewPageData}
                 onadd = {removeAddedValuesFromRoomNumbers} 
@@ -524,12 +527,12 @@
         </label>
     </div>    
     
-    {#if pgFormPageData?.propertyData}
+    {#if propertyData}
     <!-- // TO LEARN:(learn how form submit works) check how to use redirect and also see why redirect is working if we use formaction in update button  but redirect is not working if we use fetch that is called from handleUpdateSubmit in +page.svelte of this folder -->
-        <!-- <button class="mt-5 bg-pg-sky text-white px-4 py-2 rounded-md w-full cursor-pointer disabled:cursor-not-allowed disabled:bg-sky-300" formaction="?/updateInventory&recordId={pgFormPageData?.propertyData.id}">update property</button> -->
+        <!-- <button class="mt-5 bg-pg-sky text-white px-4 py-2 rounded-md w-full cursor-pointer disabled:cursor-not-allowed disabled:bg-sky-300" formaction="?/updateInventory&recordId={propertyData.id}">update property</button> -->
         <button class="mt-5 bg-pg-sky text-white px-4 py-2 rounded-md w-full cursor-pointer disabled:cursor-not-allowed disabled:bg-pg-sky-button-disabled"
             disabled={updateButtonDisabled}
-            formaction={`/pgForm?/updateInventory&recordId=${pgFormPageData?.propertyData.id}`}>
+            formaction={`/pgForm?/updateInventory&recordId=${propertyData.id}`}>
             update property
         </button>
     {:else}

@@ -1,11 +1,40 @@
 import { fail } from '@sveltejs/kit';
 
+const sharingRoomTypes = [
+    'sharing1Rooms',
+    'sharing2Rooms',
+    'sharing3Rooms',
+    'sharing4Rooms',
+    'sharing5Rooms'
+  ];
+
 async function prepareFormData(request) {
   const formData = await request.formData();
   let amenities = [];
+
+   for (const key of sharingRoomTypes) {
+    const rooms = JSON.parse(formData.get(key));
+    if (rooms?.length > 0) {
+      const sortedRooms = rooms.sort((a, b) => Number(a) - Number(b));
+      formData.delete(key);
+      formData.set(key, JSON.stringify(sortedRooms));
+    }
+  }
+  console.log('formData', formData);
+
   for (const [key, value] of formData.entries()) {
     if (key === 'pgAmenities') {
       amenities.push(value);
+    }
+    if (sharingRoomTypes.includes(key)) {
+      const availableRooms = JSON.parse(value).reduce((acc, curr) => {
+        acc[curr] = Number(key.substring(7,8));
+        return acc;
+      }, {});
+      // const availableRooms = new Map(
+      //   JSON.parse(value).map(curr => [curr, 1])
+      // );
+      formData.set(key.replace("Rooms","AvailableRooms"), JSON.stringify(availableRooms));
     }
   }
   formData.delete('pgAmenities');
@@ -24,10 +53,7 @@ export const actions = {
       return fail(400, { errors: { pgRefundableDeposit : { message : "refundable amount cannot be greater than deposite" }}});
     }
     try {
-      // create a new property in the pgProperties collection
       const record = await locals.pb.collection("pgProperties").create(formData);
-
-      // update the new proerty id in the user's pgProperties field
       let pgPropertyIdsList = locals.user.pgPropertyId || [];
       pgPropertyIdsList.push(record.id);
       await locals.pb.collection('users').update(locals.user.id, { isOwner : true, pgPropertyId : pgPropertyIdsList });

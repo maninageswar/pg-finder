@@ -111,12 +111,20 @@
 
 <div class="relative w-full">
     <div class="flex gap-4 overflow-x-auto scroll-smooth py-2 no-scrollbar" bind:this={row}>
-        {#each data.pgProperty.pgImages as pgImage}
-        <div class="w-[85%] h-[176px] rounded-md overflow-hidden bg-gray-800 flex-shrink-0 shadow-md">
-            <img src="{PUBLIC_POCKETBASE_REST_API}/files/{data.pgProperty.collectionId}/{data.pgProperty.id}/{pgImage}" 
-                alt="pg" class="w-full h-full object-cover"/>
-        </div>
-        {/each}
+        {#if data.pgProperty.pgImages.length > 0}
+            {#each data.pgProperty.pgImages as pgImage}
+            <div class="w-[85%] h-[176px] rounded-md overflow-hidden bg-gray-800 flex-shrink-0 shadow-md">
+                <img src="{PUBLIC_POCKETBASE_REST_API}/files/{data.pgProperty.collectionId}/{data.pgProperty.id}/{pgImage}" 
+                    alt="pg" class="w-full h-full object-cover"/>
+            </div>
+            {/each}
+        {:else}
+            <div class="w-[100%] h-[176px] rounded-md overflow-hidden flex-shrink-0 shadow-md">
+                <img src="/icons/hostel.svg" 
+                    alt="pg" class="w-full h-full object-cover bg-favorite-page-default-image-bgcolor"/>
+            </div>
+        {/if}
+        
     </div>
 
     {#if windowWidth > 1024}
@@ -161,13 +169,13 @@
 <div class="mt-3 grid grid-cols-2 gap-3 *:border *:border-pg-sky *:h-[170px] *:rounded-xl *:shadow-sm">
     {#each data.pgProperty.pgRoomTypes as roomType}
         <div class="p-4">
-            <img src="/icons/bed.svg" alt="bed icon" class="w-[45px] h-[45px] mb-3" />
-            <div class="flex flex-col justify-between h-[55%]">
+            <img src="/icons/bed.svg" alt="bed icon" class="w-[45px] h-[45px] mb-1" />
+            <div class="flex flex-col justify-between h-[65%]">
                  <h2 class="text-base font-bold leading-tight ">{roomType}</h2>
-                <p class="text-pg-sky-text text-sm font-normal leading-normal">&#8377;{data.pgProperty[`${roomType.replace(/\s+/g, '')}Rent`]}/month</p>
-                <p class="text-pg-sky-text text-sm font-normal leading-normal">&#8377;{data.pgProperty[`${roomType.replace(/\s+/g, '')}PerDayRent`]}/day <span class="italic">(for days stay)</span></p>
-                <!-- TO DO: try to implement the logic for the below field to display  -->
-                <!-- <p class="text-pg-sky-text text-sm font-normal leading-normal">5 rooms available</p> -->
+                <p class="text-pg-sky-text text-sm font-normal leading-normal">&#8377;{data.pgProperty[`${roomType.replace(' ', '')}Rent`]}/month</p>
+                <p class="text-pg-sky-text text-sm font-normal leading-normal">&#8377;{data.pgProperty[`${roomType.replace(' ', '')}PerDayRent`]}/day <span class="italic">(for days stay)</span></p>
+                <p class="text-pg-sky-text text-sm font-normal leading-normal">{Object.entries(data.pgProperty[`${roomType.replace(' ', '')}AvailableRooms`]).reduce((acc, curr) => acc + (curr[1] > 0 ? curr[1] : 0), 0)} 
+                    beds available</p>
             </div>
         </div>
     {/each}

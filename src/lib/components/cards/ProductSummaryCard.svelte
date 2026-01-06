@@ -3,7 +3,6 @@
     import { listOfRents } from '$lib/utils/sharedlogic';
 
     let { property, cardTopRightIcon = "noIcon", removePropertyFromFvaorites } = $props();
-    console.log('Property Data:', property);
 
     let pgRents = listOfRents(property);
 </script>

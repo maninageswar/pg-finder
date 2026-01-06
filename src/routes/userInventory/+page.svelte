@@ -10,14 +10,14 @@
         <div class="flex items-center justify-center">
             <img src="/icons/addInventory.svg" class="rotate-10" alt="add inventory" height="250px" width="250px">
         </div>
-        <p class="text-pg-sky-text mb-4">want to make your inventory visible in this application? wanna showcase your pg details, share important information, and help users discover what you offer then
+        <p class="text-pg-sky-text mb-4 text-justify">want to make your inventory visible in this application? wanna showcase your inventory details, share important information, and help users discover what you offer then
             <button onclick={()=>{
                 sessionStorage.setItem('propertyData', null);
                 goto("/pgForm")}
             } class="bg-pg-sky text-white rounded-md cursor-pointer px-3">&#x2B; create inventory</button>
         </p>
 
-        <p class="text-pg-sky-text">
+        <p class="text-pg-sky-text relative z-20 text-justify">
             looking for a new pg? you got to the right place. explore the wide range of pg options, compare locations, check amenities, and discover what suits your lifestyle
             <button onclick={()=>{goto("/")}} class="bg-pg-sky text-white rounded-md cursor-pointer px-3">here.</button>
         </p>

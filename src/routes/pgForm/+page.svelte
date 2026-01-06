@@ -61,8 +61,8 @@
 
     let noOfFloors = $state();
     let noOfRoomsInEachFloor = $state();
-    let depositeAmount = $state(0);
-    let refundableDepositeAmount = $state(0);
+    let depositeAmount = $state();
+    let refundableDepositeAmount = $state();
     let selectedRoomTypes = $state([]);
     let roomNumbers = $state([]);
     let imageFiles = $state([]);
@@ -79,8 +79,8 @@
     selectedRoomTypes = propertyData?.pgRoomTypes || [];
     noOfFloors = propertyData?.pgNoOfFloors || "";
     noOfRoomsInEachFloor = propertyData?.pgNoOfRoomsInEachFloor || "";
-    depositeAmount = propertyData?.pgDepositAmount || 0;
-    refundableDepositeAmount = propertyData?.pgRefundableDeposit || 0;
+    depositeAmount = propertyData?.pgDepositAmount || "";
+    refundableDepositeAmount = propertyData?.pgRefundableDeposit || "";
     pgAmenitiesValues = propertyData?.pgAmenities || [];
 
     let updateButtonDisabled = $state(true);
@@ -395,7 +395,7 @@
     </div>
     
     <label for="pgType">pg room types</label><span class="text-red-500">*</span>
-    <div class="mt-1 mb-4">
+    <div class="mt-1 mb-4" id="multiselectElement">
         <MultiSelect closeDropdownOnSelect={false} bind:selected={selectedRoomTypes} name="pgRoomTypes" options={roomTypes} onchange = {checkFormDataInEditModeIsEqualToViewPageData} required={true}/>
     </div>
 
@@ -603,6 +603,6 @@
     }
 
     :global(div.multiselect input):focus {
-        --tw-ring-color: none !important;
+       --tw-ring-inset: none !important;
     }
 </style>

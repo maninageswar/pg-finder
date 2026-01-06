@@ -14,10 +14,10 @@
     --color-pg-red-button: oklch(70.4% 0.191 22.216);
     --color-pg-sky-button-disabled: #95d1ece6;
     --color-pg-sky-input-disabled: #d7ecf6e6;
-    --color-pg-sky-light:#93deffe6;
-    --color-pg-sky-text:#4b819b;
-    --color-pg-card-action-element-bgcolor:#00001E;
-    --color-favorite-page-default-image-bgcolor:#92dcf9;
+    --color-pg-sky-light: #93deffe6;
+    --color-pg-sky-text: #4b819b;
+    --color-pg-card-action-element-bgcolor: #00001E;
+    --color-favorite-page-default-image-bgcolor: #92dcf9;
     --font-Manrope: Manrope, sans-serif;
 }
 
@@ -48,7 +48,7 @@ body {
 
   input, textarea, select {
     &:focus {
-      --tw-ring-color: #0ea5e9e6 !important;
+      --tw-ring-color: var(--color-pg-sky) !important;
     }
   }
 }

@@ -18,5 +18,3 @@ export async function load({ locals }) {
         userFavoritesProperties
     };
 }
-
-export const ssr = false

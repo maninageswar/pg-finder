@@ -7,5 +7,3 @@ export async function load({ params, locals }) {
         console.error("Failed to create record:", err.response?.data || err.message);
     }
 }
-
-export const ssr = false

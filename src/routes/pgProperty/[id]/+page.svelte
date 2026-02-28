@@ -211,32 +211,40 @@
     </div>
 {/if}
 
-<form method="POST" use:enhance={handlePropertyActions}>
-    <div class="flex justify-between gap-3">
+{#if data.userLoggedIn}
+    <form method="POST" use:enhance={handlePropertyActions}>
         {#if data.isCurrentUserOwner}
             <button class="mt-5 bg-pg-sky text-white px-4 py-2 rounded-md w-full flex items-center justify-center gap-1 cursor-pointer"
                 onclick={() => {
                     sessionStorage.setItem('propertyData', JSON.stringify(data.pgProperty));
-                    goto("/pgForm", {state: {propertyData: data.pgProperty, editProperty: true}})
+                    goto("/pgForm")
                 }}
             >
                 edit property
                 <img src="/icons/edit.svg" alt="edit Icon" />
             </button>
+        {:else}
+            <button class="mt-5 bg-pg-sky text-white px-4 py-2 rounded-md w-full flex items-center justify-center gap-1 cursor-pointer"
+                onclick={() => {
+                    sessionStorage.setItem('propertyDataForBookingRoom', JSON.stringify(data.pgProperty));
+                    goto(`/bookPropertyRoom/${data.pgProperty.id}`)
+                }}>
+                book room
+                <img src="/icons/bookRoom.svg" alt="bookRoom Icon" />
+            </button>
         {/if}
+    </form>
+{:else}
+    <button class="mt-5 bg-pg-sky text-white px-4 py-2 rounded-md w-full flex items-center justify-center gap-1 cursor-pointer"
+        onclick={() => {
+            warning('please login to book a room');
+            goto(`/auth/login`)
+        }}>
+        book room
+        <img src="/icons/bookRoom.svg" alt="bookRoom Icon" />
+    </button>
+{/if}
 
-        <button class="mt-5 bg-pg-sky text-white px-4 py-2 rounded-md w-full flex items-center justify-center gap-1 cursor-pointer"
-            onclick={() => {
-                sessionStorage.setItem('propertyDataForBookingRoom', JSON.stringify(data.pgProperty));
-                goto(`/bookPropertyRoom/${data.pgProperty.id}`, {state: {propertyData: data.pgProperty}})
-            }}
-        >
-            book room
-            <img src="/icons/bookRoom.svg" alt="bookRoom Icon" />
-            
-        </button>
-    </div>
-</form>
     
 <style>
     :global(#map > div:first-child + div) {

@@ -2,7 +2,6 @@
     import PocketBase from "pocketbase";
     import MultiSelect from 'svelte-multiselect'
     import { enhance } from '$app/forms';
-    import { page } from '$app/stores';
     import { Checkbox, Label, useId } from "bits-ui";
 	import Check from "phosphor-svelte/lib/Check";
 	import Minus from "phosphor-svelte/lib/Minus";

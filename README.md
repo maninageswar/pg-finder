@@ -1,3 +1,13 @@
+# what is this application all about?
+
+PG Finder is a digital platform designed to simplify the process of finding and managing Paying Guest (PG) accommodations. The application connects people who are looking for comfortable and affordable places to stay with PG owners who want to list and manage their properties efficiently.
+
+Users can search for PG accommodations across different locations, compare available options, view detailed information about rooms and facilities, read reviews from other tenants, and book a room directly through the platform. The application also enables tenants to make monthly rent payments, submit feedback, and raise maintenance or service issues easily.
+
+For PG owners, the platform provides a centralized system to add and manage their PG listings, update room availability, track bookings, monitor payments, and respond to tenant concerns. This helps streamline property management while improving communication with residents.
+
+Overall, PG Finder aims to make the PG accommodation experience more transparent, convenient, and efficient for both tenants and property owners.
+
 # wanna contribute? then follow the below steps
 
 ## prerequisites

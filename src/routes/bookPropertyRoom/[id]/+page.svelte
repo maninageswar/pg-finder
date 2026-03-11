@@ -1,7 +1,6 @@
 <script>
     import ProductSummaryCard from "$lib/components/cards/ProductSummaryCard.svelte";
     import DatePicker from "$lib/components/DatePicker.svelte";
-    import { Label, Switch } from "bits-ui";
     import Select from 'svelte-select';
     import { preventKeyPress, calculateDaysBetween, getRemainingDaysInMonth } from '$lib/utils/sharedlogic';
     import { goto, afterNavigate } from "$app/navigation";;

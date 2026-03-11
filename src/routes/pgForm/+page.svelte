@@ -224,7 +224,7 @@
                         updateButtonDisabled = true;
                         continue
                     } else {
-        updateButtonDisabled = false;
+                        updateButtonDisabled = false;
                         break
                     }
                 }
@@ -303,6 +303,7 @@
         class="w-full mt-1 mb-4 border border-pg-sky rounded-md {readonly ? "bg-pg-sky-input-disabled cursor-not-allowed" : ""}"/>
 {/snippet}
 
+<!-- try to get rid of this below snippet inorder to get rid of bits ui package this is the only place we are using bits ui-->
 {#snippet MyCheckbox({ value, label })}
     {@const id = useId()}
     <div class="flex items-center">
@@ -466,7 +467,7 @@
 
     
     <!-- pg aminities -->
-
+    <!-- try to get rid of this below component inorder to get rid of bits ui package this is the only place we are using bits ui-->
     <Checkbox.Group
         class="flex flex-col gap-3 mt-4"
         name="pgAmenities"

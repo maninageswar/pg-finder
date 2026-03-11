@@ -91,23 +91,36 @@
 <svelte:window bind:innerWidth={windowWidth} />
 
 <form method="POST" use:enhance={handlePropertyActions}>
-    <div class="flex items-center justify-between mb-5">
-        <h2 class="font-Manrope">pg information</h2>
-        {#if data.isCurrentUserOwner}
-            <button class="cursor-pointer bg-pg-red-button rounded-md p-1" onclick={() => deleteProperty(data.pgProperty.id)}
-                formaction="?/deleteInventory">
-                <img src="/icons/delete.svg" alt="delete icon"/>
-            </button>
-        {:else}
+    <dialog id="mypopover" popover>
+        <h3 class="mb-1">delete property?</h3>
+        <p class="text-pg-sky-text">are you sure you want to delete this property? this property will no longer be visibe to the users once deleted.</p>
+        <div class="flex items-center justify-between gap-2 mt-3">
+            <button class="bg-pg-red-button text-white px-4 py-2 rounded-md cursor-pointer w-full"
+                popovertarget="mypopover"
+                popovertargetaction="hide"
+                formaction="?/deleteInventory">delete</button>
+            <button class="pg-sky-button w-full" popovertarget="mypopover" popovertargetaction="hide" type="button">cancel</button>
+        </div>
+    </dialog>
+</form>
+
+<div class="flex items-center justify-between mb-5">
+    <h2 class="font-Manrope">pg information</h2>
+    {#if data.isCurrentUserOwner}
+        <button popovertarget="mypopover" class="cursor-pointer bg-pg-red-button rounded-md p-1" type="button">
+            <img src="/icons/delete.svg" alt="delete icon"/>
+        </button>
+    {:else}
+        <form method="POST" use:enhance={handlePropertyActions}>
             <button class="cursor-pointer"
                 onclick={() => isInventoryInFavorites = !isInventoryInFavorites}
                 formaction="?/{!isInventoryInFavorites ? 'removeInventoryFromFavorites' : 'addInventoryToFavorites'}"
             >
                 <img src="/icons/{isInventoryInFavorites ? "favoriteFilled" : "favoriteLine"}.svg" alt="favorite Icon" height="27px" width="27px"/>
             </button>
-        {/if}
-    </div>
-</form>
+        </form>
+    {/if}
+</div>
 
 <div class="relative w-full">
     <div class="flex gap-4 overflow-x-auto scroll-smooth py-2 no-scrollbar" bind:this={row}>
@@ -250,5 +263,21 @@
 
     .no-scrollbar {
         scrollbar-width: none;
+    }
+
+    #mypopover {
+        border: none;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        width: 350px;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        margin: 0;
+    }
+
+    #mypopover::backdrop {
+        background-color: #0005;
     }
 </style>

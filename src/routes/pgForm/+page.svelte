@@ -303,7 +303,7 @@
         class="w-full mt-1 mb-4 border border-pg-sky rounded-md {readonly ? "bg-pg-sky-input-disabled cursor-not-allowed" : ""}"/>
 {/snippet}
 
-<!-- try to get rid of this below snippet inorder to get rid of bits ui package this is the only place we are using bits ui-->
+<!-- try to get rid of this below snippet in order to get rid of bits ui package this is the only place we are using bits ui-->
 {#snippet MyCheckbox({ value, label })}
     {@const id = useId()}
     <div class="flex items-center">

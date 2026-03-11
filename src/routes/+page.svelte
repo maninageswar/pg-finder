@@ -9,7 +9,7 @@
 
 <h1>home page</h1>
 <button class="mt-5 bg-pg-sky text-white px-4 py-2 rounded-md float-right" onclick={() => {
-      sessionStorage.setItem('propertyData', null);
+      // sessionStorage.setItem('propertyData', null);
       goto("/pgForm")
     }}
   >

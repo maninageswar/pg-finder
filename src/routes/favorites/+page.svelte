@@ -4,10 +4,31 @@
 
     let { data } = $props();
 
-    let favoritePgsParentElement;  
+    let favoritePgsParentElement;
+    let showToolTip = $state(false);
 </script>
 
-<h2 class="font-Manrope mb-5">your favorite properties</h2>
+<svelte:window onclick={(e)=> {
+    if (showToolTip === true && !e.srcElement.classList.contains("infoIcon")) {
+        e.preventDefault
+        showToolTip = false
+    } 
+    }} />
+
+<div class="flex justify-between gap-2 mb-5">
+    <h2 class="font-Manrope mb-2">your favorite properties</h2>
+    <button class="relative group cursor-pointer text-base infoIcon" onclick={()=> {showToolTip = !showToolTip}}><span class="font-bold text-pg-sky text-lg infoIcon">&#9432;</span>
+        <span class="absolute  mt-2 right-0
+                    min-w-[22rem] max-w-[25rem]
+                    group-hover:block {showToolTip ? 'block' : 'hidden'}
+                    whitespace-normal break-words
+                    rounded p-1 bg-white
+                    text-xs leading-relaxed
+                    text-pg-sky border border-pg-sky shadow-lg z-10">
+            if you notice that any property is missing from your favorites, it may be because the owner of that property has exited the application and deleted it from the system
+        </span>
+    </button>
+</div>
 
 {#if data.userFavoritesProperties.length > 0}
     <div class="favoritesPgs" bind:this={favoritePgsParentElement}>

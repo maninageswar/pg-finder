@@ -9,7 +9,7 @@
 
 <div class="rounded-xl h-78 shadow-xl cursor-pointer relative">
     {#if cardTopRightIcon != "noIcon"}
-        <button class="absolute bg-pg-card-action-element-bgcolor hover:cursor-pointer opacity-35 size-6.5 rounded-full right-2 top-2 flex items-center justify-center p-0.5 z-10"
+        <button class="absolute bg-pg-card-action-element-bgcolor hover:cursor-pointer opacity-35 size-6.5 rounded-full right-2 top-2 flex items-center justify-center p-0.5"
             onclick={(e)=>{
                 e.stopPropagation();   // stops card click
                 e.preventDefault();   // stops anchor navigation

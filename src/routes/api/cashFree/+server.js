@@ -16,7 +16,7 @@ export const POST = async ({ url, request }) => {
             "customer_phone": requestBody.userMobileNumber,
         },
         "order_meta": {
-            "return_url": `${url.origin}/userInventory`
+            "return_url": `${url.origin}/userInventory?order_id={order_id}`
         }
     };
 
@@ -35,4 +35,12 @@ export const POST = async ({ url, request }) => {
             headers: { 'Content-Type': 'application/json' }
         });
      }
+}
+
+export async function GET({ url }) {
+	const orderId = url.searchParams.get("order_id");
+
+	const response = await cashfree.PGFetchOrder(orderId);
+
+	return new Response(JSON.stringify(response.data));
 }

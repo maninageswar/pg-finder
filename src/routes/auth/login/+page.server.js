@@ -12,12 +12,12 @@ export const actions = {
         const formData = await request.formData();
         const email = formData.get('email');
         const password = formData.get('password');
-    try {
-      const authData = await locals.pb.collection('users').authWithPassword(email, password);
-      locals.user = authData.record;
-    } catch (err) {
-      return fail(400, { error: 'invalid credentials' });
-    }
-    throw redirect(301, '/');
+        try {
+            const authData = await locals.pb.collection('users').authWithPassword(email, password);
+            locals.user = authData.record;
+            return { loginSuccess: true };
+        } catch (err) {
+            return fail(400, { error: 'invalid credentials' });
+        }
     }
 };

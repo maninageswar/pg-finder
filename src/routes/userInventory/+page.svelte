@@ -1,5 +1,8 @@
 <script>
     import { goto } from "$app/navigation";
+    import { warning } from "$lib/notification";
+
+    let { data } = $props();
 
 </script>
 
@@ -10,10 +13,16 @@
         <div class="flex items-center justify-center">
             <img src="/icons/addInventory.svg" class="rotate-10" alt="add inventory" height="250px" width="250px">
         </div>
-        <p class="text-pg-sky-text mb-4 text-justify">want to make your inventory visible in this application? wanna showcase your inventory details, share important information, and help users discover what you offer then
+        <p class="text-pg-sky-text mb-4 text-justify">want to make your inventory visible in this application? wanna showcase your inventory details, share important information, and help users discover what you offer? then
             <button onclick={()=>{
-                sessionStorage.setItem('propertyData', null);
-                goto("/pgForm")}
+                    sessionStorage.setItem('propertyData', null);
+                    if (data.user) {
+                        goto("/pgForm")
+                    } else {
+                        warning('please login to create inventory');
+                        goto('/auth/login')
+                    }
+                } 
             } class="bg-pg-sky text-white rounded-md cursor-pointer px-3">&#x2B; create inventory</button>
         </p>
 

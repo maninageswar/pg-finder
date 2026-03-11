@@ -10,8 +10,7 @@ export async function load({ locals }) {
             userFavoritesProperties.push(pgProperty);
         } catch (err) {
             // TO DO: handle error properly 
-            console.error("Failed to fetch record:", err.response?.data || err.message
-            );
+            console.error("Failed to fetch record this is because the property might be deleted by owner:", err.response?.data || err.message);
         }
     }
     return {

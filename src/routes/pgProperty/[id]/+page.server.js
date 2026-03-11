@@ -1,16 +1,12 @@
-let userLoggedIn = false;
 let isCurrentUserOwner = false;
 let userFavoriteProperties = [];
 let isInventoryInFavorites = false;
 
 export async function load({ params, locals }) {
     userFavoriteProperties = locals.user?.favoriteProperties || [];
-    if (locals?.user) {
-        userLoggedIn = true;
-        if (locals.user.pgPropertyId.includes(params.id) && locals.user.isOwner) {
-            isCurrentUserOwner = true
-        } else isCurrentUserOwner = false;
-    } else userLoggedIn = false;
+    if (locals?.user && locals.user.pgPropertyId.includes(params.id) && locals.user.isOwner) {
+        isCurrentUserOwner = true
+    } else isCurrentUserOwner = false;
     try {
         if (userFavoriteProperties.includes(params.id)) {
             isInventoryInFavorites = true;
@@ -20,7 +16,7 @@ export async function load({ params, locals }) {
         const pgProperty = await locals.pb.collection('pgProperties').getFirstListItem(`id="${params.id}"`)
         // console.log('isCurrentUserOwner',isCurrentUserOwner)
         return {
-            pgProperty, isCurrentUserOwner, isInventoryInFavorites, userLoggedIn
+            pgProperty, isCurrentUserOwner, isInventoryInFavorites
     };
     } catch (err) {
         // TO DO: handle error properly 

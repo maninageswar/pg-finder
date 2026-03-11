@@ -1,10 +1,11 @@
 <script>
     import { enhance } from '$app/forms';
-    import { success, failure } from '$lib/notification';
+    import { success, failure, warning } from '$lib/notification';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
+    import { goto, invalidate } from '$app/navigation';
 
-    let { data, form } = $props();
+    let { data } = $props();
 
     let showPassword = $state(false);
     
@@ -14,19 +15,28 @@
 
     onMount(() => {
         if (data?.accountCreated) {
-            success('your account has been created successfully. please login to continue');
+            success('your account has been created successfully please login to continue');
+        }
+        if($page.url.searchParams.get('authRequired')) {
+            warning('your are not logged in please login');
         }
     })
 
-    $effect(()=>{
-        if (form?.error) {
-            failure('invalid email or password. please check');
+    async function handleLogin() {
+        return async ({ result }) => {
+            if (result.type === 'success') {
+                // await goto('/');
+                // await invalidate('app:user');
+                // if you need you understand why only the below order of gotto and invlidate works and not the above one follow this link https://chatgpt.com/c/69a97ad7-c268-8323-a2b2-d495c5996188
+                // imaportant learning: you should always use "invalidate" first then "goto" if you ever use them together
+                await invalidate('app:home');
+                await goto('/');
+                success('logged in successfully');
+            } else if (result.type === 'failure') {
+                failure('invalid email or password. please check');
+            }
         }
-        console.log('authRequired',$page.url.searchParams.get('authRequired'))
-        if($page.url.searchParams.get('authRequired')) {
-            failure('your are not logged in. please login');
-        }
-    })
+    }
 
 </script>
 
@@ -35,7 +45,7 @@
     <h2 class="font-Manrope text-center font-bold text-[28px]">home is just a click away let's get you there</h2>
 </div>
 
-<form action="?/login" method="POST" use:enhance>
+<form action="?/login" method="POST" use:enhance={handleLogin}>
     <label for="email">email<span class="text-red-500">*</span></label>
     <input class="w-full mt-1 mb-4 border border-pg-sky rounded-md" name="email" id="email" type="email" required placeholder="enter your email">
 

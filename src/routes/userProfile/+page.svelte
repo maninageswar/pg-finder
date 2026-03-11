@@ -4,7 +4,7 @@
     import { enhance } from '$app/forms';
     import { success, failure } from '$lib/notification';
     import { preventKeyPress } from '$lib/utils/sharedlogic';
-    import { goto } from '$app/navigation';
+    import { goto, invalidateAll } from '$app/navigation';
 
     let { data } = $props();
     let editingProfile = $state(false);
@@ -28,10 +28,6 @@
                     data = result.data
                     success('your profile updated successfully');
                 }
-                if (result.data?.logout) {
-                    success('logged out successfully');
-                    goto('/auth/login');
-                }
             } else if (result.type === 'failure') {
                 if (result.data?.errors?.logoutError) { failure(result.data?.logoutError) }
                 else if (result.data?.errors?.mobileNumber) { 
@@ -50,6 +46,21 @@
                 failure('something went wrong while updating user profile');
             }
             isUpdateProfileButtonDisabled = true
+            invalidateAll();
+        }
+    }
+
+    function handleLogOut() {
+        return async ({ result }) => {
+            if (result.type === 'success') {
+                sessionStorage.clear();
+                success('logged out successfully');
+                goto('/auth/login');
+            } else if (result.type === 'failure') {
+                failure(result.data?.errors?.logoutError || 'failed to logout');
+            } else {
+                failure('something went wrong while logging out');
+            }
         }
     }
 
@@ -94,7 +105,7 @@
 
 <div class="flex items-center justify-between mb-5">
     <h2 class="font-Manrope">user profile</h2>
-    <form method="POST" use:enhance={handleSubmit}>
+    <form method="POST" use:enhance={handleLogOut}>
         <button class="cursor-pointer bg-pg-sky rounded-md p-1 pl-2"
             formaction="?/logout">
             <img src="/icons/logout.svg" alt="logout icon"/>

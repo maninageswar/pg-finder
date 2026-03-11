@@ -339,7 +339,7 @@
 
     <h3 class="mb-2">owner details</h3>
 
-    {@render Input({required:true, name:"ownerName", type:"text", label:"name", bindValue:propertyData?.ownerName, placeholder:"enter owner's name"})}
+    {@render Input({required:true, name:"ownerName", type:"text", label:"name", bindValue:(propertyData?.ownerName || data.user?.name), readonly:true, placeholder:"enter owner's name"})}
 
     {@render Input({required:true, name:"ownerNumber", type:"number", label:"mobile", bindValue:propertyData?.ownerNumber, placeholder:"enter owner's mobile no."})}
 

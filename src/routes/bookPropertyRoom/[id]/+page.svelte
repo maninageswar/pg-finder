@@ -4,7 +4,7 @@
     import { Label, Switch } from "bits-ui";
     import Select from 'svelte-select';
     import { preventKeyPress, calculateDaysBetween, getRemainingDaysInMonth } from '$lib/utils/sharedlogic';
-    import { goto } from "$app/navigation";
+    import { goto, afterNavigate } from "$app/navigation";;
 
     let { data } = $props();
     let propertyDataForBookingRoom = JSON.parse(sessionStorage.getItem('propertyDataForBookingRoom'));
@@ -16,25 +16,34 @@
     let pgRent = $state(0);
     let checkInDate = $state(new Date());
     let checkOutDate = $state();
-    let isPaymentButtonDisabled = $state(true);
+    let isMakePaymentButtonDisabled = $state(true);
     let formElement;
+    let userMobileNumber = $state(data.user.mobileNumber || null);
+    let emergencyContactNumber = $state(data.user.emergencyContactNumber || null);
 
-    console.log('propertyDataForBookingRoom', propertyDataForBookingRoom);
+    function shouldMakePaymentButtonBeEnabled() {
+        if (userMobileNumber && emergencyContactNumber && selectedRoom) {
+            isMakePaymentButtonDisabled = false;
+        } else {
+            isMakePaymentButtonDisabled = true;
+        }
+    }
 
     $effect(() => {
         if (stayType === 'monthlyStay' && checkInDate && selectedRoomType) {
             let rentPerMonth = propertyDataForBookingRoom[`${selectedRoomType?.value.replace(' ', '')}Rent`];
             const lastDayOfMonth = new Date(checkInDate.getFullYear(), checkInDate.getMonth() + 1, 0).getDate();
             pgRent = Math.floor(rentPerMonth * getRemainingDaysInMonth(checkInDate) / lastDayOfMonth);
-            selectedRoom ? isPaymentButtonDisabled = false : isPaymentButtonDisabled = true;
+            shouldMakePaymentButtonBeEnabled();
+            
         } else if (stayType === 'fewDaysStay' && checkInDate && checkOutDate && selectedRoomType) {
             let rentPerDay = propertyDataForBookingRoom[`${selectedRoomType?.value.replace(' ', '')}PerDayRent`];
             let selectedPeriodDays = calculateDaysBetween(checkInDate, checkOutDate);
-            console.log('selectedPeriodDays', selectedPeriodDays);
             pgRent = rentPerDay * selectedPeriodDays;
-            selectedRoom ? isPaymentButtonDisabled = false : isPaymentButtonDisabled = true;
+            shouldMakePaymentButtonBeEnabled();
         } else {
             pgRent = 0;
+            isMakePaymentButtonDisabled = true;
         }
     });
 
@@ -62,12 +71,31 @@
             stayType,
             checkInDate,
             checkOutDate,
-            roomType: selectedRoomType.value,
-            roomNumber: selectedRoom.value,
+            roomType: selectedRoomType,
+            roomNumber: selectedRoom,
             totalAmount: propertyDataForBookingRoom.pgDepositAmount + pgRent
         }
-        goto("/paymentPage", { state: { paymentInfo } });
+        const paymentInfoStringified = JSON.stringify(paymentInfo);
+        sessionStorage.setItem('paymentInfo', paymentInfoStringified);
+        goto("/paymentPage", { state: { paymentInfo: paymentInfoStringified } });
     }
+
+    afterNavigate(() => {
+        const savedPaymentInfo = sessionStorage.getItem('paymentInfo');        
+        if (savedPaymentInfo) {
+            const paymentInfo = JSON.parse(savedPaymentInfo);
+            userMobileNumber = paymentInfo.userMobileNumber;
+            emergencyContactNumber = paymentInfo.emergencyContactNumber;
+            stayType = paymentInfo.stayType;
+            checkInDate = new Date(paymentInfo.checkInDate);
+            if (paymentInfo.checkOutDate) {
+                checkOutDate = new Date(paymentInfo.checkOutDate);
+            }
+            selectedRoomType = paymentInfo.roomType;
+            selectedRoom = paymentInfo.roomNumber;
+            sessionStorage.removeItem('paymentInfo');
+        }
+    });
     
 </script>
 
@@ -99,7 +127,7 @@
             <input type="number" name="userMobileNumber" required 
                 onkeydown={(e) => preventKeyPress(e, ['e', ' ', '+', '-', '.'])}
                 onwheel={(e) => e.target.blur()}
-                value={data.user.mobileNumber || null}
+                bind:value={userMobileNumber}
                 class="w-full border border-pg-sky rounded-md focus:border-pg-sky mb-4"/>
         </div>
         <div>
@@ -107,7 +135,7 @@
             <input type="number" name="emergencyContactNumber" required 
                 onkeydown={(e) => preventKeyPress(e, ['e', ' ', '+', '-', '.'])}
                 onwheel={(e) => e.target.blur()}
-                value={data.user.emergencyContactNumber || null}
+                bind:value={emergencyContactNumber}
                 class="w-full border border-pg-sky rounded-md focus:border-pg-sky mb-4"/>
         </div>
 
@@ -115,8 +143,8 @@
 
     <label for="stayType">select stay type</label><span class="text-red-500">*</span>
     <div class="flex justify-between mt-2 mb-4 *:w-[50%] *:justify-start *:pl-3">
-        <div><input class="mr-2 accent-pg-sky border-pg-sky" type="radio" name="stayType" checked onchange={() => stayType = 'monthlyStay'} value="monthlyStay"/>monthly stay</div>
-        <div><input class="mr-2 accent-pg-sky border-pg-sky" type="radio" name="stayType" onchange={() => stayType = 'fewDaysStay'} value="fewDaysStay"/>few days stay</div>
+        <div><input class="mr-2 accent-pg-sky border-pg-sky" type="radio" name="stayType" checked={stayType === 'monthlyStay'} onchange={() => stayType = 'monthlyStay'} value="monthlyStay"/>monthly stay</div>
+        <div><input class="mr-2 accent-pg-sky border-pg-sky" type="radio" name="stayType" checked={stayType === 'fewDaysStay'} onchange={() => stayType = 'fewDaysStay'} value="fewDaysStay"/>few days stay</div>
     </div>
 
     {#if stayType === 'fewDaysStay'}
@@ -163,16 +191,16 @@
             <p class="text-xl text-pg-sky-text flex items-baseline gap-1">pg rent for {stayType === 'fewDaysStay' ? 'selected days' : 'current month'}
                 <!-- tooltip -->
                 <button class="relative group cursor-pointer text-base {pgRent ? 'block' : 'hidden'}" onclick={()=> showToolTip = !showToolTip} type="button"><span class="font-bold">&#9432;</span>
-                <span class="absolute left-1/2 -translate-x-1/2 top-full mt-2
-                            min-w-[20rem] max-w-[25rem]
-                            hidden group-hover:block {showToolTip ? 'block' : 'hidden'}
-                            whitespace-normal break-words
-                            rounded p-1 bg-white
-                            text-xs leading-relaxed
-                            text-pg-sky border border-pg-sky shadow-lg z-10">
-                    {stayType === 'fewDaysStay' ? 'this rent is calculated based on your selected period' : 'this rent is calculated for the remaining days of the current month from the selected check in date'}
-                </span>
-            </button>
+                    <span class="absolute left-1/2 -translate-x-1/2 top-full mt-2
+                                min-w-[20rem] max-w-[25rem]
+                                group-hover:block {showToolTip ? 'block' : 'hidden'}
+                                whitespace-normal break-words
+                                rounded p-1 bg-white
+                                text-xs leading-relaxed
+                                text-pg-sky border border-pg-sky shadow-lg z-10">
+                        {stayType === 'fewDaysStay' ? 'this rent is calculated based on your selected period' : 'this rent is calculated for the remaining days of the current month from the selected check in date'}
+                    </span>
+                </button>
             </p>
 
             <span>:</span>
@@ -196,7 +224,7 @@
         <h2 class="font-Manrope text-pg-sky">&#8377;{propertyDataForBookingRoom.pgDepositAmount + pgRent}</h2>
     </div>
 
-    <button type="button" onclick={goToPaymentPage} class="w-full pg-sky-button" disabled={isPaymentButtonDisabled}>make the payment of &#8377;{propertyDataForBookingRoom.pgDepositAmount + pgRent}</button>
+    <button type="button" onclick={goToPaymentPage} class="w-full pg-sky-button" disabled={isMakePaymentButtonDisabled}>make the payment of &#8377;{propertyDataForBookingRoom.pgDepositAmount + pgRent}</button>
 </form>
 
 <style>

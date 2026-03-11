@@ -34,7 +34,13 @@ body {
   max-width: 450px;
   min-height: 100vh;
   box-sizing: border-box;
-  margin: 0px auto
+  margin: 0px auto;
+  background-color: #ffffff;
+}
+
+html {
+  /* to be filled with doodled style image of icons related to dormitory */
+  /* background-image: url(/images/); */
 }
 
 @layer base {

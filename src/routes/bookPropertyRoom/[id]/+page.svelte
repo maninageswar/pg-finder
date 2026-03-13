@@ -3,7 +3,11 @@
     import DatePicker from "$lib/components/DatePicker.svelte";
     import Select from 'svelte-select';
     import { preventKeyPress, calculateDaysBetween, getRemainingDaysInMonth } from '$lib/utils/sharedlogic';
-    import { goto, afterNavigate } from "$app/navigation";;
+    import { goto, afterNavigate } from "$app/navigation";
+    import Accordion from "$lib/components/Accordion.svelte";
+    import VerticalStepper from '$lib/components/VerticalStepper.svelte';
+    import CopyText from '$lib/components/CopyText.svelte';
+
 
     let { data } = $props();
     let propertyDataForBookingRoom = JSON.parse(sessionStorage.getItem('propertyDataForBookingRoom'));
@@ -19,6 +23,14 @@
     let formElement;
     let userMobileNumber = $state(data.user.mobileNumber || null);
     let emergencyContactNumber = $state(data.user.emergencyContactNumber || null);
+
+    const steps = [
+        { title: 'fill details', description: 'enter the mandatory information and select your desired stay type, room type and room no.' },
+        { title: 'make the booking', description: 'review the deposit amount and room price, then click on make the booking button. your booking request will be sent to property owner for approval.' },
+        { title: `contact the owner <span class="text-pg-sky">(${propertyDataForBookingRoom.ownerNumber})</span>`, description: 'call the property owner and inform him about your booking request.' , copyText: propertyDataForBookingRoom.ownerNumber},
+        { title: 'make the payment', description: "after confirming with the owner, complete the payment offline or via UPI to the owner's number." },
+        { title: 'booking confirmation', description: 'once you make the payment, the owner will approve your booking. you can then check the booking status in your <a class="text-pg-sky underline" href="/userInventory">manage inventory page</a>.' },
+    ];
 
     function shouldMakePaymentButtonBeEnabled() {
         if (userMobileNumber && emergencyContactNumber && selectedRoom) {
@@ -183,11 +195,25 @@
         </div>
     </div>
 
+    <h2 class="font-Manrope mt-7 mb-5">read this, it's <span class="text-pg-sky">important!</span></h2>
+    <div class="mb-2">
+        <Accordion title="room booking process <span class='text-pg-red'>(must read)</span>" isOpen={true}>
+                <VerticalStepper {steps}/>
+        </Accordion>
+    </div>
+
+    <div class="mb-2">
+        <Accordion title="why this process instead of payment gateway?">
+            <p class="text-sm text-pg-sky-text text-justify">we use direct payment to the property owner to avoid payment gateway transaction fees. 
+                this helps keep the platform free for users like you and ensures the full amount goes directly to the owner.</p>
+        </Accordion>
+    </div>
+
     <h2 class="font-Manrope mt-7 mb-5">check in</h2>
 
     <div class="mb-5 flex justify-between">
         <div class="flex justify-between w-[75%]">
-            <p class="text-xl text-pg-sky-text flex items-baseline gap-1">pg rent for {stayType === 'fewDaysStay' ? 'selected days' : 'current month'}
+            <p class="text-xl text-pg-sky-text flex items-baseline gap-1">rent for the {stayType === 'fewDaysStay' ? 'selected days' : 'current month'}
                 <!-- tooltip -->
                 <button class="relative group cursor-pointer text-base {pgRent ? 'block' : 'hidden'}" onclick={()=> showToolTip = !showToolTip} type="button"><span class="font-bold">&#9432;</span>
                     <span class="absolute left-1/2 -translate-x-1/2 top-full mt-2
@@ -223,7 +249,7 @@
         <h2 class="font-Manrope text-pg-sky">&#8377;{propertyDataForBookingRoom.pgDepositAmount + pgRent}</h2>
     </div>
 
-    <button type="button" onclick={goToPaymentPage} class="w-full pg-sky-button" disabled={isMakePaymentButtonDisabled}>make the payment of &#8377;{propertyDataForBookingRoom.pgDepositAmount + pgRent}</button>
+    <button type="button" onclick={goToPaymentPage} class="w-full pg-sky-button" disabled={isMakePaymentButtonDisabled}>make the booking for &#8377;{propertyDataForBookingRoom.pgDepositAmount + pgRent}</button>
 </form>
 
 <style>

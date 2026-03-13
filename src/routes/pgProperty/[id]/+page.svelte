@@ -6,6 +6,7 @@
     import * as gmapsLoader from '@googlemaps/js-api-loader';
     const { Loader } = gmapsLoader;
     import { failure, success, warning } from '$lib/notification'
+    import CopyText from '$lib/components/CopyText.svelte';
 
     let { data } = $props();
     let mapElement;
@@ -214,13 +215,13 @@
 
 <div class="mt-3">
     <p class="text-base font-medium leading-normal line-clamp-1">number</p>
-    <p class="text-pg-sky-text text-sm font-normal leading-normal line-clamp-2">{data.pgProperty.ownerNumber}</p>
+    <div class="flex items-center gap-1"><p class="text-pg-sky-text text-sm font-normal leading-normal line-clamp-2">{data.pgProperty.ownerNumber}</p><CopyText text={data.pgProperty.ownerNumber} /></div>
 </div>
 
 {#if data.pgProperty.ownerEmail}
     <div class="mt-3">
         <p class="text-base font-medium leading-normal line-clamp-1">email</p>
-        <p class="text-pg-sky-text text-sm font-normal leading-normal line-clamp-2">{data.pgProperty.ownerEmail}</p>
+        <a href="mailto:{data.pgProperty.ownerEmail}" class="text-pg-sky-text text-sm underline font-normal leading-normal line-clamp-2">{data.pgProperty.ownerEmail}</a>
     </div>
 {/if}
 

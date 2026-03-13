@@ -23,12 +23,12 @@
                         goto('/auth/login')
                     }
                 } 
-            } class="bg-pg-sky text-white rounded-md cursor-pointer px-3">&#x2B; create inventory</button>
+            } class="text-pg-sky underline cursor-pointer">create inventory</button>
         </p>
 
         <p class="text-pg-sky-text relative z-20 text-justify">
             looking for a new pg? you got to the right place. explore the wide range of pg options, compare locations, check amenities, and discover what suits your lifestyle
-            <button onclick={()=>{goto("/")}} class="bg-pg-sky text-white rounded-md cursor-pointer px-3">here.</button>
+            <a href="/" class="text-pg-sky underline cursor-pointer">here.</a>
         </p>
         <div class="w-full flex items-center justify-center -translate-y-10">
             <img src="/icons/findHome.svg" alt="find home" height="360px" width="360px">

@@ -1,11 +1,17 @@
 <script>
     import { enhance } from '$app/forms';
     import FavoriteCard from '$lib/components/cards/FavoriteCard.svelte';
+    import InfoToolTip from "$lib/components/InfoToolTip.svelte";
 
     let { data } = $props();
 
     let favoritePgsParentElement;
-    let showToolTip = $state(false);
+    let showToolTip = $state(true);
+
+    setTimeout(() => {
+        showToolTip = false
+    }, 1000);
+
 </script>
 
 <svelte:window onclick={(e)=> {
@@ -17,17 +23,8 @@
 
 <div class="flex justify-between gap-2 mb-5">
     <h2 class="font-Manrope mb-2">your favorite properties</h2>
-    <button class="relative group cursor-pointer text-base infoIcon" onclick={()=> {showToolTip = !showToolTip}}><span class="font-bold text-pg-sky text-lg infoIcon">&#9432;</span>
-        <span class="absolute  mt-2 right-0
-                    min-w-[22rem] max-w-[25rem]
-                    group-hover:block {showToolTip ? 'block' : 'hidden'}
-                    whitespace-normal break-words
-                    rounded p-1 bg-white
-                    text-xs leading-relaxed
-                    text-pg-sky border border-pg-sky shadow-lg z-10">
-            if you notice that any property is missing from your favorites, it may be because the owner of that property has exited the application and deleted it from the system
-        </span>
-    </button>
+    <InfoToolTip {showToolTip} toltipClass="right-0 min-w-[22rem] max-w-[25rem]"
+                info="if you notice that any property is missing from your favorites, it may be because the owner of that property has exited the application and deleted it from the system" />
 </div>
 
 {#if data.userFavoritesProperties.length > 0}
@@ -48,7 +45,9 @@
         {/each}
     </div>
 {:else}
-    <img src="/icons/noFavorites.svg" class="w-[400px] h-[300px]" alt="noFavorites">
-    <p class="font-Manrope text-pg-sky-text text-center">you don't have any pg's in your favorites. start exploring and add to your favorites <a class="font-bold text-pg-sky underline" href="/">here.</a></p>
+    <div class="flex flex-col items-center justify-center min-h-[calc(100vh-20rem)]">
+        <img src="/icons/noFavorites.svg" class="w-[400px] h-[300px]" alt="noFavorites">
+        <p class="font-Manrope text-pg-sky-text text-center">you don't have any pg's in your favorites. start exploring and add to your favorites <a class="font-bold text-pg-sky underline" href="/">here.</a></p>
+    </div>
 {/if}
 

@@ -14,7 +14,7 @@
 </script>
 
 <div class="relative" style="max-width: {maxWidth}">
-  <img src="/icons/calender.svg" alt="" class="absolute size-7 -z-10 right-0.5 translate-y-1/4"/>
+  <img src="/icons/calender.svg" alt="calender icon" class="absolute size-7 -z-10 right-0.5 translate-y-1/4"/>
   <DateInput {placeholder}
     bind:value={selectedDate}
     closeOnSelection = true

@@ -160,16 +160,28 @@
     </div>
     <span class="text-pg-red text-sm {formErrors?.emergencyContactNumber ? "mb-6" : "hidden"} px-6">{formErrors?.emergencyContactNumber}</span>
     
-    <button class="mt-5 pg-sky-button w-full flex items-center justify-center gap-1 cursor-pointer"
-        type={!editingProfile ? "notbutton" : "button"}
-        disabled={editingProfile && isUpdateProfileButtonDisabled || formHasErrors}
-        onclick={() => {
-            editingProfile = !editingProfile
-            tick().then(() => {userName?.focus()});
-            }}>
-        <div>{editingProfile ? "update" : "edit"} profile</div> 
-        <img src="/icons/edit.svg" class="{editingProfile ? "hidden" : ""}" alt="edit Icon"/>
-    </button>
+    <div class="flex gap-5">
+        <button class="mt-5 pg-sky-button w-full flex items-center justify-center gap-1 cursor-pointer"
+            type={!editingProfile ? "notbutton" : "button"}
+            disabled={editingProfile && isUpdateProfileButtonDisabled || formHasErrors}
+            onclick={() => {
+                editingProfile = !editingProfile
+                tick().then(() => {userName?.focus()});
+                }}>
+            <div>{editingProfile ? "update" : "edit"} profile</div> 
+            <img src="/icons/edit.svg" class="{editingProfile ? "hidden" : ""}" alt="edit Icon"/>
+        </button>
+        {#if !data.isCurrentUserOwner}
+            <button class="mt-5 w-full pg-sky-button flex items-center justify-center cursor-pointer"
+                onclick={()=>goto("/userBookings")}
+                type="button">
+                my bookings
+                <img src="/icons/booking.svg" alt="booking Icon"/>
+            </button>
+        {/if}
+
+    </div>
+    
 </form>
 
 <style>

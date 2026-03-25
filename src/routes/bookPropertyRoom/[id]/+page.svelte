@@ -7,11 +7,14 @@
     import Accordion from "$lib/components/Accordion.svelte";
     import VerticalStepper from '$lib/components/VerticalStepper.svelte';
     import CopyText from '$lib/components/CopyText.svelte';
+    import { enhance } from '$app/forms';
+    import { success, failure } from '$lib/notification';
+    import InfoToolTip from "$lib/components/InfoToolTip.svelte";
 
 
     let { data } = $props();
     let propertyDataForBookingRoom = JSON.parse(sessionStorage.getItem('propertyDataForBookingRoom'));
-    let stayType = $state('monthlyStay');
+    let stayType = $state('monthly stay');
     let selectedRoomType = $state(null);
     let selectedRoom = $state(null);
     let avaliabeRoomsOfSelectedRoomType = $state([]);
@@ -21,19 +24,19 @@
     let checkOutDate = $state();
     let isMakePaymentButtonDisabled = $state(true);
     let formElement;
-    let userMobileNumber = $state(data.user.mobileNumber || null);
+    let mobileNumber = $state(data.user.mobileNumber || null);
     let emergencyContactNumber = $state(data.user.emergencyContactNumber || null);
 
     const steps = [
         { title: 'fill details', description: 'enter the mandatory information and select your desired stay type, room type and room no.' },
         { title: 'make the booking', description: 'review the deposit amount and room price, then click on make the booking button. your booking request will be sent to property owner for approval.' },
         { title: `contact the owner <span class="text-pg-sky">(${propertyDataForBookingRoom.ownerNumber})</span>`, description: 'call the property owner and inform him about your booking request.' , copyText: propertyDataForBookingRoom.ownerNumber},
-        { title: 'make the payment', description: "after confirming with the owner, complete the payment offline or via UPI to the owner's number." },
-        { title: 'booking confirmation', description: 'once you make the payment, the owner will approve your booking. you can then check the booking status in your <a class="text-pg-sky underline" href="/userInventory">manage inventory page</a>.' },
+        { title: 'make the payment', description: "after confirming with the owner, complete the payment offline or via UPI" },
+        { title: 'booking confirmation', description: 'once you make the payment, the owner will approve your booking. you can then check the booking status in <a class="text-pg-sky underline" href="/userBookings">user bookings page</a>.' },
     ];
 
     function shouldMakePaymentButtonBeEnabled() {
-        if (userMobileNumber && emergencyContactNumber && selectedRoom) {
+        if (mobileNumber && emergencyContactNumber && selectedRoom) {
             isMakePaymentButtonDisabled = false;
         } else {
             isMakePaymentButtonDisabled = true;
@@ -41,13 +44,13 @@
     }
 
     $effect(() => {
-        if (stayType === 'monthlyStay' && checkInDate && selectedRoomType) {
+        if (stayType === 'monthly stay' && checkInDate && selectedRoomType) {
             let rentPerMonth = propertyDataForBookingRoom[`${selectedRoomType?.value.replace(' ', '')}Rent`];
             const lastDayOfMonth = new Date(checkInDate.getFullYear(), checkInDate.getMonth() + 1, 0).getDate();
             pgRent = Math.floor(rentPerMonth * getRemainingDaysInMonth(checkInDate) / lastDayOfMonth);
             shouldMakePaymentButtonBeEnabled();
             
-        } else if (stayType === 'fewDaysStay' && checkInDate && checkOutDate && selectedRoomType) {
+        } else if (stayType === 'few days stay' && checkInDate && checkOutDate && selectedRoomType) {
             let rentPerDay = propertyDataForBookingRoom[`${selectedRoomType?.value.replace(' ', '')}PerDayRent`];
             let selectedPeriodDays = calculateDaysBetween(checkInDate, checkOutDate);
             pgRent = rentPerDay * selectedPeriodDays;
@@ -75,7 +78,7 @@
         const paymentInfo = {
             name: formData.get('name'),
             email: formData.get('email'),
-            userMobileNumber: formData.get('userMobileNumber'),
+            mobileNumber: formData.get('mobileNumber'),
             emergencyContactNumber: formData.get('emergencyContactNumber'),
             userId: data.user.id,
             propertyId: propertyDataForBookingRoom.id,
@@ -91,11 +94,38 @@
         goto("/paymentPage", { state: { paymentInfo: paymentInfoStringified } });
     }
 
+    function makeTheBooking({ formData }) {
+        formData.delete('roomType');
+        formData.delete('roomNumber');
+        formData.append('roomType', selectedRoomType.value);
+        formData.append('roomNumber', selectedRoom.value);
+        formData.append('userId', data.user.id);
+        formData.append('propertyId', propertyDataForBookingRoom.id);
+        formData.append('propertyName', propertyDataForBookingRoom.pgName);
+        formData.append('checkInDate', new Date(checkInDate).toISOString());
+        formData.append('checkOutDate', checkOutDate ? new Date(checkOutDate).toISOString() : null);
+        formData.append('depositAmountPaid', false);
+        formData.append('currentMonthRentPaid', false);
+        formData.append('bookingMonthRent', pgRent);
+        formData.append('bookingStatus', 'pending');
+        formData.append('stayStatus', 'yetToBeCheckedIn');
+        return async ({ result }) => {
+            if (result.type === 'success') {
+                success(result.data?.bookingRequestMade)
+                goto("/userInventory");
+            } 
+            if (result.type === 'failure') {
+                failed(result.data?.bookingRequestFailed || 'booking request failed, please try again later')
+            }
+        };
+    }
+
+    // remove the below method we are not using it anymore
     afterNavigate(() => {
         const savedPaymentInfo = sessionStorage.getItem('paymentInfo');        
         if (savedPaymentInfo) {
             const paymentInfo = JSON.parse(savedPaymentInfo);
-            userMobileNumber = paymentInfo.userMobileNumber;
+            mobileNumber = paymentInfo.mobileNumber;
             emergencyContactNumber = paymentInfo.emergencyContactNumber;
             stayType = paymentInfo.stayType;
             checkInDate = new Date(paymentInfo.checkInDate);
@@ -117,7 +147,7 @@
     <ProductSummaryCard property = {propertyDataForBookingRoom} />
 </a>
 
-<form bind:this={formElement}>
+<form method="POST" action="?/makeRoomBookingRequest" bind:this={formElement} use:enhance={makeTheBooking}>
     <label for="name">name</label><span class="text-red-500">*</span>
     <input type="text" name="name" required 
         onwheel={(e) => e.target.blur()}
@@ -135,10 +165,10 @@
     <div class="flex gap-2">
         <div>
             <label for="mobileNumber">mobile number</label><span class="text-red-500">*</span>
-            <input type="number" name="userMobileNumber" required 
+            <input type="number" name="mobileNumber" required 
                 onkeydown={(e) => preventKeyPress(e, ['e', ' ', '+', '-', '.'])}
                 onwheel={(e) => e.target.blur()}
-                bind:value={userMobileNumber}
+                bind:value={mobileNumber}
                 class="w-full border border-pg-sky rounded-md focus:border-pg-sky mb-4"/>
         </div>
         <div>
@@ -154,11 +184,11 @@
 
     <label for="stayType">select stay type</label><span class="text-red-500">*</span>
     <div class="flex justify-between mt-2 mb-4 *:w-[50%] *:justify-start *:pl-3">
-        <div><input class="mr-2 accent-pg-sky border-pg-sky" type="radio" name="stayType" checked={stayType === 'monthlyStay'} onchange={() => stayType = 'monthlyStay'} value="monthlyStay"/>monthly stay</div>
-        <div><input class="mr-2 accent-pg-sky border-pg-sky" type="radio" name="stayType" checked={stayType === 'fewDaysStay'} onchange={() => stayType = 'fewDaysStay'} value="fewDaysStay"/>few days stay</div>
+        <div><input class="mr-2 accent-pg-sky border-pg-sky" type="radio" name="stayType" checked={stayType === 'monthly stay'} onchange={() => stayType = 'monthly stay'} value="monthly stay"/>monthly stay</div>
+        <div><input class="mr-2 accent-pg-sky border-pg-sky" type="radio" name="stayType" checked={stayType === 'few days stay'} onchange={() => stayType = 'few days stay'} value="few days stay"/>few days stay</div>
     </div>
 
-    {#if stayType === 'fewDaysStay'}
+    {#if stayType === 'few days stay'}
     <div class="flex gap-2 justify-between mb-4">
         <div class="w-full">
             <label for="checkInDate">check in date</label><span class="text-red-500">*</span>
@@ -173,7 +203,7 @@
         
     {/if}
 
-    {#if stayType === 'monthlyStay'}
+    {#if stayType === 'monthly stay'}
         <div class="w-[200px] mb-4">
             <label for="checkInDate">check in date</label><span class="text-red-500">*</span>
             <DatePicker bind:selectedDate={checkInDate} />
@@ -195,7 +225,7 @@
         </div>
     </div>
 
-    <h2 class="font-Manrope mt-7 mb-5">read this, it's <span class="text-pg-sky">important!</span></h2>
+    <!-- <h2 class="font-Manrope mt-7 mb-5">read this, it's <span class="text-pg-sky">important!</span></h2> -->
     <div class="mb-2">
         <Accordion title="room booking process <span class='text-pg-red'>(must read)</span>" isOpen={true}>
                 <VerticalStepper {steps}/>
@@ -213,19 +243,12 @@
 
     <div class="mb-5 flex justify-between">
         <div class="flex justify-between w-[75%]">
-            <p class="text-xl text-pg-sky-text flex items-baseline gap-1">rent for the {stayType === 'fewDaysStay' ? 'selected days' : 'current month'}
+            <p class="text-xl text-pg-sky-text flex items-baseline gap-1">rent for the {stayType === 'few days stay' ? 'selected days' : 'current month'}
                 <!-- tooltip -->
-                <button class="relative group cursor-pointer text-base {pgRent ? 'block' : 'hidden'}" onclick={()=> showToolTip = !showToolTip} type="button"><span class="font-bold">&#9432;</span>
-                    <span class="absolute left-1/2 -translate-x-1/2 top-full mt-2
-                                min-w-[20rem] max-w-[25rem]
-                                group-hover:block {showToolTip ? 'block' : 'hidden'}
-                                whitespace-normal break-words
-                                rounded p-1 bg-white
-                                text-xs leading-relaxed
-                                text-pg-sky border border-pg-sky shadow-lg z-10">
-                        {stayType === 'fewDaysStay' ? 'this rent is calculated based on your selected period' : 'this rent is calculated for the remaining days of the current month from the selected check in date'}
-                    </span>
-                </button>
+                 {#if pgRent}
+                    <InfoToolTip {showToolTip} toltipClass="left-1/2 -translate-x-1/2 top-full min-w-[20rem] max-w-[25rem]"
+                        info={stayType === 'few days stay' ? 'this rent is calculated based on your selected period' : 'this rent is calculated for the remaining days of the current month from the selected check in date'} />
+                 {/if}
             </p>
 
             <span>:</span>
@@ -249,7 +272,7 @@
         <h2 class="font-Manrope text-pg-sky">&#8377;{propertyDataForBookingRoom.pgDepositAmount + pgRent}</h2>
     </div>
 
-    <button type="button" onclick={goToPaymentPage} class="w-full pg-sky-button" disabled={isMakePaymentButtonDisabled}>make the booking for &#8377;{propertyDataForBookingRoom.pgDepositAmount + pgRent}</button>
+    <button class="w-full pg-sky-button" disabled={isMakePaymentButtonDisabled}>make the booking request for &#8377;{propertyDataForBookingRoom.pgDepositAmount + pgRent}</button>
 </form>
 
 <style>

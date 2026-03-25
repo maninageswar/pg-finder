@@ -1,37 +1,36 @@
 <script>
     import { goto } from "$app/navigation";
     import { warning } from "$lib/notification";
+    import DefaultUserInventoryPage from "$lib/components/DefaultUserInventoryPage.svelte";
+    import UserInventoryCard from "$lib/components/cards/UserInventoryCard.svelte";
 
     let { data } = $props();
 
+    console.log("userBookedProperty", data.userBookedProperty);
+
 </script>
 
-<h2 class="font-Manrope mb-5">manage inventory</h2>
+<h2 class="font-Manrope mb-5">user inventory</h2>
 
-{#if true}
-    <div class="w-full px-2">
-        <div class="flex items-center justify-center">
-            <img src="/icons/addInventory.svg" class="rotate-10" alt="add inventory" height="250px" width="250px">
-        </div>
-        <p class="text-pg-sky-text mb-4 text-justify">want to make your inventory visible in this application? wanna showcase your inventory details, share important information, and help users discover what you offer? then
-            <button onclick={()=>{
-                    sessionStorage.setItem('propertyData', null);
-                    if (data.user) {
-                        goto("/pgForm")
-                    } else {
-                        warning('please login to create inventory');
-                        goto('/auth/login')
-                    }
-                } 
-            } class="text-pg-sky underline cursor-pointer">create inventory</button>
-        </p>
 
-        <p class="text-pg-sky-text relative z-20 text-justify">
-            looking for a new pg? you got to the right place. explore the wide range of pg options, compare locations, check amenities, and discover what suits your lifestyle
-            <a href="/" class="text-pg-sky underline cursor-pointer">here.</a>
-        </p>
-        <div class="w-full flex items-center justify-center -translate-y-10">
-            <img src="/icons/findHome.svg" alt="find home" height="360px" width="360px">
-        </div>
-    </div>
+{#if data.user && !data.user.isOwner && false}
+    {#each data.userBookedProperty as userBookedProperty}
+        {#if userBookedProperty.bookingStatus == "booked" || true}
+            <UserInventoryCard {...userBookedProperty} />
+        {:else}
+            <div id="pendingBookingCard" class="bg-yellow-400 rounded-2xl p-5 shadow-lg relative font-Manrope overflow-hidden">
+                <div class="absolute size-35 rounded-full bg-black/10 -top-10 -right-10"></div>
+                <h2 class="text-3xl font-bold leading-tight mb-4 text-white">pending booking request</h2>
+                <p class="text-lg font-semibold text-black/70 mt-0.5">
+                    you have a pending booking request. you can view its details under pending booking info once approved.
+                </p>
+            </div>
+        {/if}
+    {/each}
+    
+
+<!-- {:else if false} -->
+    <!-- show the page for owner -->
+{:else}
+    <DefaultUserInventoryPage/>
 {/if}

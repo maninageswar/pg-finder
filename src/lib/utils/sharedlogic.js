@@ -14,7 +14,7 @@ export function listOfRents(property) {
     return pgRents;
 }
 
-// place the funtions related to dates logic them below
+// place the funtions related to dates below
 export function calculateDaysBetween(checkInDate, checkOutDate) {
     if (!checkInDate || !checkOutDate || checkInDate >= checkOutDate) {
         return 0; // Invalid dates or checkIn >= checkOut
@@ -31,4 +31,10 @@ export function getRemainingDaysInMonth(date) {
     const lastDayOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
     const currentDay = date.getDate();
     return lastDayOfMonth - currentDay + 1;
+}
+
+export function isFutureDate(dateString) {
+    const date = new Date(dateString).setHours(0, 0, 0, 0);
+    const today = new Date().setHours(0, 0, 0, 0);
+    return date >= today;
 }

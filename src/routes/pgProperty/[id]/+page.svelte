@@ -7,6 +7,7 @@
     const { Loader } = gmapsLoader;
     import { failure, success, warning } from '$lib/notification'
     import CopyText from '$lib/components/CopyText.svelte';
+    import SvelteModal from "$lib/components/SvelteModal.svelte";
 
     let { data } = $props();
     let mapElement;
@@ -14,6 +15,7 @@
     let windowWidth = $state(0)
     console.log('data.pgProperty',data.pgProperty)
     let isInventoryInFavorites = $state(data.isInventoryInFavorites);
+    let showModal = $state(false);
 
     const pgAmenitiesLabels = {
         studyTableChair: "study table & chair",
@@ -92,23 +94,20 @@
 <svelte:window bind:innerWidth={windowWidth} />
 
 <form method="POST" use:enhance={handlePropertyActions}>
-    <dialog id="mypopover" popover>
-        <h3 class="mb-1">delete property?</h3>
-        <p class="text-pg-sky-text">are you sure you want to delete this property? this property will no longer be visibe to the users once deleted.</p>
-        <div class="flex items-center justify-between gap-2 mt-3">
-            <button class="bg-pg-red-button text-white px-4 py-2 rounded-md cursor-pointer w-full"
-                popovertarget="mypopover"
-                popovertargetaction="hide"
-                formaction="?/deleteInventory">delete</button>
-            <button class="pg-sky-button w-full" popovertarget="mypopover" popovertargetaction="hide" type="button">cancel</button>
-        </div>
-    </dialog>
+    <SvelteModal bind:showModal
+        title="delete property?" 
+        description="are you sure you want to delete this property? this property will no longer be visibe to the users once deleted."
+        formaction="?/deleteInventory"
+        buttonTitle="delete"
+    />
 </form>
 
 <div class="flex items-center justify-between mb-5">
     <h2 class="font-Manrope">pg information</h2>
     {#if data.isCurrentUserOwner}
-        <button popovertarget="mypopover" class="cursor-pointer bg-pg-red-button rounded-md p-1" type="button">
+        <!-- TO DO (important): check when the owner of the property deletes it is not updating the home page like the home page should not display the deleted property 
+         and also when he tries to delete it check if any user is associated with the property if there are any users associated, prevent deletion -->
+        <button popovertarget="mypopover" class="cursor-pointer bg-pg-red-button rounded-md p-1" type="button" onclick={() => showModal = true}>
             <img src="/icons/delete.svg" alt="delete icon"/>
         </button>
     {:else}
@@ -264,21 +263,5 @@
 
     .no-scrollbar {
         scrollbar-width: none;
-    }
-
-    #mypopover {
-        border: none;
-        padding: 1.5rem;
-        border-radius: 1rem;
-        width: 350px;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        margin: 0;
-    }
-
-    #mypopover::backdrop {
-        background-color: #0005;
     }
 </style>

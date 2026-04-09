@@ -42,7 +42,7 @@
 		background: rgba(0, 0, 0, 0.3);
 	}
 	dialog > div {
-		padding: 1em;
+		padding: 1.5rem;
         width: 350px;
 	}
 	dialog[open] {

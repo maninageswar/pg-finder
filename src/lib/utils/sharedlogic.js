@@ -33,8 +33,6 @@ export function getRemainingDaysInMonth(date) {
     return lastDayOfMonth - currentDay + 1;
 }
 
-export function isFutureDate(dateString) {
-    const date = new Date(dateString).setHours(0, 0, 0, 0);
-    const today = new Date().setHours(0, 0, 0, 0);
-    return date >= today;
+export function camelToSpaced(str) {
+  return str.replace(/([A-Z])/g, ' $1').toLowerCase();
 }

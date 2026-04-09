@@ -1,4 +1,5 @@
 import { redirect } from '@sveltejs/kit';
+import filter from 'svelte-select/filter';
 
 export async function load({ locals }) {
     if (!locals.user) {
@@ -6,7 +7,9 @@ export async function load({ locals }) {
     }
     try {
         // const userBookedProperty = await locals.pb.collection('bookingDetails').getFirstListItem(`userId=${locals.user.id}`);
-        const userBookedProperty = await locals.pb.collection('bookingDetails').getFullList(`userId="${locals.user.id}"`);
+        const userBookedProperty = await locals.pb.collection('bookingDetails').getFullList(`userId="${locals.user.id}"`,{
+            filter: 'bookingStatus="booked"',
+        });
         console.log('userBookedProperty', userBookedProperty);
         return { userBookedProperty };
     } catch (error) {

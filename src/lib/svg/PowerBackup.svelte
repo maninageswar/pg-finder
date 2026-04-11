@@ -1,0 +1,16 @@
+<script>
+  import { PG_SKY_COLOR } from '../utils/sharedlogic.js';
+
+  let { width = 20, height = 20, color = PG_SKY_COLOR } = $props();
+</script>
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  {width}
+  {height}
+  viewBox="0 0 256 256"
+  ><path
+    fill={color}
+    d="M224 56h-48V16a8 8 0 0 0-16 0v40H96V16a8 8 0 0 0-16 0v40H32.55C26.28 56 24 60.78 24 64a8 8 0 0 0 8 8h16v88a40 40 0 0 0 40 40h32v40a8 8 0 0 0 16 0v-40h32a40 40 0 0 0 40-40V72h16a8 8 0 0 0 0-16m-56 128H88a24 24 0 0 1-24-24V72h128v88a24 24 0 0 1-24 24m-17.42-60.56a8 8 0 0 1 .91 7.37l-12 32a8 8 0 0 1-15-5.62l8-21.19H112a8 8 0 0 1-7.49-10.81l12-32a8 8 0 1 1 15 5.62l-8 21.19H144a8 8 0 0 1 6.58 3.44"
+  /></svg
+>

@@ -38,7 +38,7 @@ async function prepareFormData(request) {
     }
   }
   formData.delete('pgAmenities');
-  formData.append('pgAmenities', JSON.stringify(amenities));
+  formData.append('pgAmenities', JSON.stringify(amenities.sort()));
   const selectedState = JSON.parse(formData.get('pgState'));
   const selectedPgType = JSON.parse(formData.get('pgType'));
   formData.set('pgState', selectedState.value);

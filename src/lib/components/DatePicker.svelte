@@ -1,5 +1,7 @@
 <script>
 	import { DateInput } from 'date-picker-svelte'
+  import Calender from '../svg/Calender.svelte';
+
   const currentDate = new Date()
   const oneYearLater = new Date();
   oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
@@ -14,7 +16,9 @@
 </script>
 
 <div class="relative" style="max-width: {maxWidth}">
-  <img src="/icons/calender.svg" alt="calender icon" class="absolute size-7 -z-10 right-0.5 translate-y-1/4"/>
+  <div class="absolute size-7 -z-10 right-0.5 translate-y-1/4">
+    <Calender width={25} height={25}/>
+  </div>
   <DateInput {placeholder}
     bind:value={selectedDate}
     closeOnSelection = true

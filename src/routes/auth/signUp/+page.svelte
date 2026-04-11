@@ -2,6 +2,9 @@
     import { enhance } from '$app/forms';
     import { success, failure } from '$lib/notification';
     import { page } from '$app/stores';
+    import Google from '$lib/svg/Google.svelte';
+    import Eye from '$lib/svg/Eye.svelte';
+    import EyeOff from '$lib/svg/EyeOff.svelte';
 
     let { form } = $props();
 
@@ -66,9 +69,9 @@
             class="absolute right-3 top-1/4" 
             onclick={()=>togglePassword()}>
             {#if !showPassword}
-                <img src="/icons/eyeOff.svg" class="w-5 h-5" alt="hide password">
+                <EyeOff/>
             {:else}
-                <img src="/icons/eye.svg" class="w-5 h-5" alt="show password">
+                <Eye/>
             {/if}
         </button>
     </div>
@@ -95,8 +98,8 @@
 
 <form action="?/continueWithGoogle" method="POST" use:enhance>
     <button class="border border-pg-sky px-4 py-2 text-pg-sky rounded-md w-full flex justify-center items-center">
-        <img src="/icons/google.svg" class="w-5 h-5 mr-3" alt="">
-        <p class="text-transparent bg-clip-text bg-[linear-gradient(to_right,#4285F4_0%,#EA4335_25%,#FBBC05_50%,#34A853_75%,#4285F4_100%)] cursor-pointer">
+        <Google/>
+        <p class="ml-3 text-transparent bg-clip-text bg-[linear-gradient(to_right,#4285F4_0%,#EA4335_25%,#FBBC05_50%,#34A853_75%,#4285F4_100%)] cursor-pointer">
             continue with google
         </p>
     </button>

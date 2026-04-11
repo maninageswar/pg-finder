@@ -1,6 +1,9 @@
 <script>
     import { PUBLIC_POCKETBASE_REST_API } from '$env/static/public';
     import { listOfRents } from '$lib/utils/sharedlogic';
+    import * as amenityIcons from '$lib/svg';
+    import CloseWhite from '$lib/svg/CloseWhite.svelte';
+    import FavoriteWhiteLine from '$lib/svg/FavoriteWhiteLine.svelte';
 
     let { property, cardTopRightIcon = "noIcon", removePropertyFromFvaorites } = $props();
 
@@ -15,7 +18,11 @@
                 e.preventDefault();   // stops anchor navigation
                 removePropertyFromFvaorites();
                 }}>
-            <img src="/icons/{cardTopRightIcon == "close" ? "closeWhite" : "favoriteWhiteLine"}.svg" alt="close icon">
+            {#if cardTopRightIcon == "close"}
+                <CloseWhite/>
+            {:else}
+                <FavoriteWhiteLine/>
+            {/if}
         </button>
     {/if}
     {#if property.pgImages.length > 0}
@@ -29,10 +36,20 @@
 
         <p class="text-pg-sky-text truncate">{property.pgAddress.toLowerCase()}</p>
 
-        <div class="w-full inline [&>*:not(:last-child)]:mr-2 truncate text-pg-sky ">
+        <div class="w-full [&>*:not(:last-child)]:mr-1 truncate text-pg-sky showAmenitiesInOneLine">
             {#each property.pgAmenities as pgAmenitie}
-                <img src="/icons/{pgAmenitie}.svg" alt="pg amenity icon" class="inline"/>
+                {#if amenityIcons[pgAmenitie]}
+                    <svelte:component this={amenityIcons[pgAmenitie]} />
+                {:else}
+                    <svelte:component this={amenityIcons["defaultAmenity"]} />
+                {/if}
             {/each}
         </div>
     </div>
 </div>
+
+<style>
+    .showAmenitiesInOneLine :global(svg) {
+        display: inline;
+    }
+</style>

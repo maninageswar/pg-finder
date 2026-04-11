@@ -5,6 +5,9 @@
     import { success, failure } from '$lib/notification';
     import { preventKeyPress } from '$lib/utils/sharedlogic';
     import { goto, invalidateAll } from '$app/navigation';
+    import Booking from '$lib/svg/Booking.svelte';
+    import Logout from '$lib/svg/Logout.svelte';
+    import Edit from '$lib/svg/Edit.svelte';
 
     let { data } = $props();
     let editingProfile = $state(false);
@@ -108,7 +111,7 @@
     <form method="POST" use:enhance={handleLogOut}>
         <button class="cursor-pointer bg-pg-sky rounded-md p-1 pl-2"
             formaction="?/logout">
-            <img src="/icons/logout.svg" alt="logout icon"/>
+            <Logout color={"#FFFFFF"}/>
         </button>
     </form>
 </div>
@@ -169,14 +172,14 @@
                 tick().then(() => {userName?.focus()});
                 }}>
             <div>{editingProfile ? "update" : "edit"} profile</div> 
-            <img src="/icons/edit.svg" class="{editingProfile ? "hidden" : ""}" alt="edit Icon"/>
+            <Edit color="#FFFFFF"/>
         </button>
         {#if !data.isCurrentUserOwner}
             <button class="mt-5 w-full pg-sky-button flex items-center justify-center cursor-pointer"
                 onclick={()=>goto("/userBookings")}
                 type="button">
                 my bookings
-                <img src="/icons/booking.svg" alt="booking Icon"/>
+                <Booking color={"#FFFFFF"}/>
             </button>
         {/if}
 

@@ -4,6 +4,7 @@
     import { success, failure } from "$lib/notification";
     import { goto } from "$app/navigation";
     import { camelToSpaced } from "$lib/utils/sharedlogic";
+    import Location from "$lib/svg/Location.svelte";
 
     let { data } = $props();
     let allBookings = $state(data.userBookings);
@@ -108,7 +109,7 @@
                 <div class="min-w-0">
                     <h3 class="font-semibold font-Manrope mb-1 truncate">{booking.propertyName}</h3>
                     <a href={booking.expand.propertyId.pgLocation} class="flex items-center gap-1 cursor-pointer">
-                        <img src="/icons/location.svg" alt="locationIcon">
+                        <div><Location/></div>
                         <div class="min-w-0 flex justify-between">
                             <p class="text-sm text-pg-sky-text font-Manrope truncate lowercase">{booking.expand.propertyId.pgAddress}, {booking.expand.propertyId.pgCity}, {booking.expand.propertyId.pgState}</p>
                             <div class="text-pg-sky-text inline-flex items-center">

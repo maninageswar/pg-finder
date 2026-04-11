@@ -1,6 +1,13 @@
+<script>
+    import AddInventory from "$lib/svg/AddInventory.svelte";
+    import FindHome from "$lib/svg/FindHome.svelte";
+</script>
+
 <div class="w-full px-2">
     <div class="flex items-center justify-center">
-        <img src="/icons/addInventory.svg" class="rotate-10" alt="add inventory" height="250px" width="250px">
+         <div class="rotate-10 h-[250px] w-[250px]">
+            <AddInventory/>
+         </div>
     </div>
     <p class="text-pg-sky-text mb-4 text-justify">want to make your inventory visible in this application? then
         <button onclick={()=>{
@@ -21,6 +28,8 @@
         <!-- if you have booked a room in a property the property details will be visible this page once the booking is approved and the current date is equal to or after the check-in date.  -->
     </p>
     <div class="w-full flex items-center justify-center -translate-y-10">
-        <img src="/icons/findHome.svg" alt="find home" height="360px" width="360px">
+        <div class="size-[360px]">
+            <FindHome/>
+        </div>
     </div>
 </div>

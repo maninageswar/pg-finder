@@ -1,3 +1,66 @@
+export const PG_SKY_COLOR = "#0ea5e9e6";
+
+export const amenities = {
+    airConditioning: "air conditioning",
+    biometricEntry: "biometric entry",
+    cctvSurveillance: "cctv surveillance",
+    commonKitchen: "common kitchen",
+    commonTv: "common tv",
+    cupboardWardrobe: "cupboard/wardrobe",
+    geyserHotWater: "geyser/hot water",
+    gymFitnessArea: "gym/fitness area",
+    indoorGames: "indoor games",
+    liftAvaliability: "lift/elevator",
+    parkingSpace: "parking space",
+    powerBackup: "power backup",
+    refrigerator: "refrigerator",
+    roWater: "ro water",
+    roomCleaning: "room cleaning",
+    studyTableChair: "study table & chair",
+    threeMeals: "3 meals a day",
+    washingMachines: "washing machines",
+    wifi: "wi-fi"
+};
+
+export const states = [
+        "andhra pradesh",
+        "arunachal pradesh",
+        "assam",
+        "bihar",
+        "chhattisgarh",
+        "goa",
+        "gujarat",
+        "haryana",
+        "himachal pradesh",
+        "jharkhand",
+        "karnataka",
+        "kerala",
+        "madhya pradesh",
+        "maharashtra",
+        "manipur",
+        "meghalaya",
+        "mizoram",
+        "nagaland",
+        "odisha",
+        "punjab",
+        "rajasthan",
+        "sikkim",
+        "tamil nadu",
+        "telangana",
+        "tripura",
+        "uttar pradesh",
+        "uttarakhand",
+        "west bengal",
+        "andaman and nicobar islands",
+        "chandigarh",
+        "dadra and nagar haveli and daman and diu",
+        "delhi",
+        "jammu and kashmir",
+        "ladakh",
+        "lakshadweep",
+        "puducherry"
+    ];
+
 export function preventKeyPress(e, blockedKeys) {
     if (blockedKeys.includes(e.key)) {
         e.preventDefault();

@@ -10,7 +10,7 @@ const config = {
 	},
 
 	vitePlugin: {
-		inspector:true,
+		inspector:true, //(shortcut for mac : option + x)
 	}
 };
 

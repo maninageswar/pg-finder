@@ -10,7 +10,11 @@ const config = {
 	},
 
 	vitePlugin: {
-		inspector:true, //(shortcut for mac : option + x)
+		// this plugin is used to directly open the svelte component in the editor when clicking on the component
+		// in the browser (dev mode only) just run the application in dev mode click and hold option + x (for mac)
+		// or alt + x (for windows) then you will see a orange border around the elements just click on the element
+		// to open the file in the editor that is responsible for that element in the browser
+		inspector:true,
 	}
 };
 

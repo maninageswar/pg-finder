@@ -85,6 +85,7 @@ cd pg-finder
 # Start the application
 npm run dev
 ```
+the application will run at port 5173 so you can open the application at http://localhost:5173
 
 ### Run PocketBase
 

@@ -1,77 +1,99 @@
-# what is this application all about?
+# What Is This Application All About? 🏠
 
-PG Finder is a digital platform designed to simplify the process of finding and managing Paying Guest (PG) accommodations. The application connects people who are looking for comfortable and affordable places to stay with PG owners who want to list and manage their properties efficiently.
+> Note: This is not a fully vibe-coded project. I originally started it as a practice project to put my Svelte and SvelteKit learnings into action. Only the Accordion and Vertical Stepper components were implemented with Copilot; the rest of the project was coded manually. It feels important to state that clearly in the age of AI. 🤖
 
-Users can search for PG accommodations across different locations, compare available options, view detailed information about rooms and facilities, read reviews from other tenants, and book a room directly through the platform. The application also enables tenants to make monthly rent payments, submit feedback, and raise maintenance or service issues easily.
+PG Finder is a digital platform built to simplify the process of finding and managing Paying Guest (PG) accommodations. It connects people looking for comfortable and affordable places to stay with PG owners who want to list and manage their properties efficiently.
 
-For PG owners, the platform provides a centralized system to add and manage their PG listings, update room availability, track bookings, monitor payments, and respond to tenant concerns. This helps streamline property management while improving communication with residents.
+Users can search for PG accommodations across different locations, compare available options, view detailed information about rooms and facilities, read reviews from other tenants, and book a room directly through the platform. The application also allows tenants to make monthly rent payments with ease.
+
+For PG owners, the platform provides a centralized system to add and manage PG listings, update room availability, track bookings, monitor payments, and respond to tenant concerns. This helps streamline property management while improving communication with residents.
 
 Overall, PG Finder aims to make the PG accommodation experience more transparent, convenient, and efficient for both tenants and property owners.
 
-# wanna contribute? then follow the below steps
+# Want To Contribute? Follow These Steps 🤝
 
-## prerequisites
+## Prerequisites ✅
 
-- node (v22.18.0 or above)
+- Node.js v22.18.0 or above
+- PocketBase
 
-- pocketbase
+To run the project, you need to set up two things: PocketBase and the UI. Let's go through how to set up each of them.
 
+## How To Set Up PocketBase? 🗄️
 
-## how to setup the pocketbase?
+Install PocketBase from [here](https://pocketbase.io/docs/). Once it is installed, extract the zip file. You can start the application by running `./pocketbase serve` inside the extracted directory.
 
-Install pocketbase form [here](https://pocketbase.io/docs/). Once installed extract the zip folder. You could start the application by running ./pocketbase serve in the extracted directory. if you are using mac and if you get "command not found" when you run ./pocketbase serve then
+If you are using macOS and get a "command not found" or permission-related error when running `./pocketbase serve`, use the following command first:
 
 ```sh
-# run the below command to give execute permission to the pocketbase file
+# Remove the quarantine attribute from the PocketBase binary
 xattr -d com.apple.quarantine pocketbase
 
-# after that you can run the pocketbase server
+# Start the PocketBase server
 ./pocketbase serve
 ```
-The started web server has the following default routes:
 
-- http://127.0.0.1:8090 - if pb_public directory exists, serves the static content from it (html, css, images, etc.)
-- http://127.0.0.1:8090/_/ - superusers dashboard (open this to access the dashboard)
-- http://127.0.0.1:8090/api/ - REST-ish API
+The web server starts with the following default routes:
 
-And that's it! The first time it will generate an installer link that should be automatically opened in the browser to set up your first superuser account (you can also create the first superuser manually via ./pocketbase superuser create EMAIL PASS).
+- `http://127.0.0.1:8090` - Serves static content if the `pb_public` directory exists
+- `http://127.0.0.1:8090/_/` - Superuser dashboard
+- `http://127.0.0.1:8090/api/` - REST-style API
 
-Once the superuser account is created(save the credentials we will have put them in .env while setting up the ui) you will land in superusers dashboard page. There, go to import collections (http://127.0.0.1:8090/_/#/settings/import-collections) under settings and paste the content the is avaliable [in this file.](https://github.com/maninageswar/pocketbase-collection-for-pg-form-project/blob/main/pgPropertiesCollection_schema_3MAR26.json) Hit review and import. Now if you go to collection tab in the dashboard you can see pgProperties and users collections.
+The first time you run PocketBase, it generates an installer link that should open automatically in your browser so you can create your first superuser account. You can also create the first superuser manually with `./pocketbase superuser create EMAIL PASS`.
 
-## how to setup the ui?
+Once the superuser account is created, save the credentials because you will need them in the `.env` file while setting up the UI. After logging in, open the Import Collections page under Settings:
 
-fork this repo then clone your fork
+- `http://127.0.0.1:8090/_/#/settings/import-collections`
 
-Open .env file (which is under pg-finder folder) and then replace POCKETBASE_USER_NAME and POCKETBASE_PASSWORD with yours credentials then
+Paste the schema content available [in this file](https://github.com/maninageswar/pocketbase-collection-for-pg-form-project/blob/main/pg_properties_collection_schema_30_april_26.json), then click Review and Import.
+
+> Note: The schema content may change as development progresses, so make sure to copy it form the latest file avaliable [in this repository.](https://github.com/maninageswar/pocketbase-collection-for-pg-form-project).
+
+After the import is complete, go to the Collections tab in the dashboard. You should see the `users`, `bookingDetails`, and `pgProperties` collections.
+
+## How To Set Up The UI? 💻
+
+Fork this repository, then clone your fork.
+
+Open the `.env` file in the `pg-finder` folder and replace `POCKETBASE_USER_NAME` and `POCKETBASE_PASSWORD` with your own credentials.
 
 ```sh
-# get inside project folder which has package.json file
+PUBLIC_GOOGLE_MAP_API_KEY="AIzaSyDpw1rEUHvNPh1dxNnErPM_y5kMZtCBQQM"
+PUBLIC_POCKETBASE_SERVER_URL="http://127.0.0.1:8090"
+PUBLIC_POCKETBASE_REST_API="http://127.0.0.1:8090/api"
+POCKETBASE_USER_NAME="testpocketbase@gmail.com" # replace it with yours
+POCKETBASE_PASSWORD="pocketbaseYouSavedMyDay" # replace it with yours
+```
+then
+
+```sh
+# Move into the project folder that contains package.json
 cd pg-finder
 
-# install dependencies
+# Install dependencies
 npm i
 ```
 
-## run the application
+## Run The Application 🚀
 
-- run ui
+### Run The UI
 
 ```sh
-# get inside project folder which has package.json file
+# Move into the project folder that contains package.json
 cd pg-finder
 
-# run the application
+# Start the application
 npm run dev
 ```
 
-- run pocketbase
+### Run PocketBase
 
-(if you follow the above steps to setup the pocketbase then you can skip this step as it will be already running, but if you have stopped it then you can start it again by running the below command)
+If you followed the PocketBase setup steps above, you can skip this because it should already be running. If you stopped it, start it again with the following command:
 
 ```sh
-# get inside pocket base extracted folder
+# Move into the extracted PocketBase folder
 cd your-pocketbase-extracted-folder
 
-# run pocketbase
+# Start PocketBase
 pocketbase serve
 ```

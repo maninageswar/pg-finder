@@ -98,3 +98,7 @@ cd your-pocketbase-extracted-folder
 # Start PocketBase
 pocketbase serve
 ```
+
+## Useful debugging tip 💡
+
+When you run the application in dev mode click and hold option + x (for mac) or alt + x (for windows) then you will see a orange border around the elements, just click on the element to open the file in the editor that is responsible for that element in the browser

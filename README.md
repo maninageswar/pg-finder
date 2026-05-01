@@ -76,7 +76,7 @@ npm i
 
 ## Run The Application 🚀
 
-### Run The UI
+### Run The UI 🖥️
 
 ```sh
 # Move into the project folder that contains package.json
@@ -87,7 +87,7 @@ npm run dev
 ```
 the application will run at port 5173 so you can open the application at http://localhost:5173
 
-### Run PocketBase
+### Run PocketBase 🗄️
 
 If you followed the PocketBase setup steps above, you can skip this because it should already be running. If you stopped it, start it again with the following command:
 

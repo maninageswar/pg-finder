@@ -128,6 +128,15 @@
     roomNumbers.sort((a, b) => a - b);
   }
 
+  function addAllRemovedValuesToRoomNumbers(event) {
+    event.options.forEach((option) => {
+      if (!roomNumbers.includes(option)) {
+        roomNumbers.push(option);
+      }
+    });
+    roomNumbers.sort((a, b) => a - b);
+  }
+
   function handleFiles(event) {
     const files = Array.from(event.target.files).filter((f) =>
       f.type.startsWith("image/"),
@@ -652,7 +661,7 @@
           onchange={checkFormDataInEditModeIsEqualToViewPageData}
           onadd={removeAddedValuesFromRoomNumbers}
           onremove={addRemovedValuetoRoomNumbers}
-          onremoveAll={addRemovedValuetoRoomNumbers}
+          onremoveAll={addAllRemovedValuesToRoomNumbers}
           name={`${selectedRoomType.replace(" ", "")}Rooms`}
           options={roomNumbers}
           required={true}

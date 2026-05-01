@@ -4,7 +4,6 @@
 
   let { data } = $props();
 
-  console.log("data main", data.pgInventories);
 
 </script>
 
@@ -24,6 +23,6 @@
 </button>
 <br>
 
-{#each data.pgInventories.items as pgInventory}
+{#each data.pgInventories?.items as pgInventory}
   <button class="mt-5 bg-pg-sky text-white" onclick={() => goto(`/pgProperty/${pgInventory.id}`)}>{pgInventory.pgName}</button><br>
 {/each}

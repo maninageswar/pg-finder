@@ -88,10 +88,10 @@
 <h2 class="font-Manrope mb-5">user bookings</h2>
 
 <div class="flex gap-2 py-1 justify-between mb-4 *:border *:px-5 *:py-2 *:rounded-3xl *:cursor-pointer">
-    <button onclick={filterBookings} class="{all ? 'bg-pg-sky text-white' : 'border-gray-200 '}">all</button>
-    <button onclick={filterBookings} class="{booked ? 'bg-pg-sky text-white' : 'border-gray-200 '}">booked</button>
-    <button onclick={filterBookings} class="{pending ? 'bg-pg-sky text-white' : 'border-gray-200 '}">pending</button>
-    <button onclick={filterBookings} class="{cancelled ? 'bg-pg-sky text-white' : 'border-gray-200 '}">cancelled</button>
+    <button onclick={filterBookings} class="{all ? 'bg-pg-sky text-white' : 'grey-border '}">all</button>
+    <button onclick={filterBookings} class="{booked ? 'bg-pg-sky text-white' : 'grey-border '}">booked</button>
+    <button onclick={filterBookings} class="{pending ? 'bg-pg-sky text-white' : 'grey-border '}">pending</button>
+    <button onclick={filterBookings} class="{cancelled ? 'bg-pg-sky text-white' : 'grey-border '}">cancelled</button>
 </div>
 
 {#if data.loadError}
@@ -104,7 +104,7 @@
     </div>
 {:else}
     {#each userBookings as booking}
-        <div class="border border-gray-200 p-4 rounded-xl mb-4">
+        <div class="border grey-border p-4 rounded-xl mb-4">
             <div class="flex items-center justify-between gap-2 mb-3">
                 <div class="min-w-0">
                     <h3 class="font-semibold font-Manrope mb-1 truncate">{booking.propertyName}</h3>
@@ -139,7 +139,7 @@
                             </svg>
                         </button>
                         {#if openMenuId === booking.id}
-                            <div class="absolute right-0 top-8 bg-white border border-gray-200 rounded-xl shadow-lg z-10 min-w-[160px] overflow-hidden font-Manrope">
+                            <div class="absolute right-0 top-8 bg-white border grey-border rounded-xl shadow-lg z-10 min-w-[160px] overflow-hidden font-Manrope">
                                 <button onclick={() => { 
                                     openMenuId = null;
                                     goto(`/pgProperty/${booking.expand.propertyId.id}`);

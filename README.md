@@ -96,7 +96,7 @@ If you followed the PocketBase setup steps above, you can skip this because it s
 cd your-pocketbase-extracted-folder
 
 # Start PocketBase
-pocketbase serve
+./pocketbase serve
 ```
 
 ## Optional setup ⚙️

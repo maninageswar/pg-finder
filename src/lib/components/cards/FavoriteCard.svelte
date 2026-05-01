@@ -10,7 +10,7 @@
     let pgRents = listOfRents(property);
 </script>
 
-<div class="rounded-xl h-78 border border-gray-200 cursor-pointer relative">
+<div class="rounded-xl h-78 border grey-border cursor-pointer relative">
     {#if cardTopRightIcon != "noIcon"}
         <button class="absolute bg-pg-card-action-element-bgcolor hover:cursor-pointer opacity-35 size-6.5 rounded-full right-2 top-2 flex items-center justify-center p-0.5"
             onclick={(e)=>{

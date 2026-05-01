@@ -53,7 +53,7 @@
 
 <p class="mb-2 font-Manrope text-lg font-medium">payment with out gateway charges</p>
 
-<label class="border border-gray-200 rounded-xl w-full h-35 p-4 flex flex-col justify-between font-Manrope mb-5 cursor-pointer">
+<label class="border grey-border rounded-xl w-full h-35 p-4 flex flex-col justify-between font-Manrope mb-5 cursor-pointer">
     <div>
         <input class="mr-2 accent-pg-sky border-pg-sky h-4" type="radio" name="paymentMethod" onchange={() => { selectedPaymentMethod = 'paidOffline'; }} value="paidOffline"/>
         paid cash offline
@@ -64,7 +64,7 @@
     </p>
 </label>
 
-<label class="border border-gray-200 rounded-xl w-full h-35 p-4 flex flex-col justify-between font-Manrope mb-5 cursor-pointer">
+<label class="border grey-border rounded-xl w-full h-35 p-4 flex flex-col justify-between font-Manrope mb-5 cursor-pointer">
     <div>
         <input class="mr-2 accent-pg-sky border-pg-sky h-4" type="radio" name="paymentMethod" onchange={() => { selectedPaymentMethod = 'paidThroughUPI'; }} value="paidThroughUPI"/>
         paid through upi manually
@@ -79,7 +79,7 @@
 
 <p class="mb-2 font-Manrope text-lg font-medium">payment with gateway charges</p>
 
-<label class="border border-gray-200 rounded-xl w-full h-35 p-4 flex flex-col justify-between font-Manrope mb-5 cursor-pointer">
+<label class="border grey-border rounded-xl w-full h-35 p-4 flex flex-col justify-between font-Manrope mb-5 cursor-pointer">
     <div>
         <input class="mr-2 accent-pg-sky border-pg-sky h-4" type="radio" name="paymentMethod" id="paidOfflineGateway" onchange={() => { selectedPaymentMethod = 'paymentGateway'; }} value="paymentGateway"/>
         pay using payment gateway (cashfree)

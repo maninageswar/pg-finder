@@ -47,7 +47,7 @@ Once the superuser account is created, save the credentials because you will nee
 
 Paste the schema content available [in this file](https://github.com/maninageswar/pocketbase-collection-for-pg-form-project/blob/main/pg_properties_collection_schema_30_april_26.json), then click Review and Import.
 
-> Note: The schema content may change as development progresses, so make sure to copy it form the latest file avaliable [in this repository.](https://github.com/maninageswar/pocketbase-collection-for-pg-form-project).
+> Note: The schema content may change as development progresses, so make sure to copy it form the latest file avaliable [in this repository.](https://github.com/maninageswar/pocketbase-collection-for-pg-form-project)
 
 After the import is complete, go to the Collections tab in the dashboard. You should see the `users`, `bookingDetails`, and `pgProperties` collections.
 
@@ -99,6 +99,36 @@ cd your-pocketbase-extracted-folder
 pocketbase serve
 ```
 
+## Optional setup ⚙️
+
+If you have followed the steps above, you can start implementing new features. However, if you want `OAuth` for user authorization and `Payment Gateway` [Cashfree Payment Gateway] for collecting payments (currently as of 01/05/2026 the application is not using payment gateway yet but the code for it is in place) to work, you need to set them up. 
+
+### Cashfree payment gateway 💳
+
+Creat your `cash free app id` and `cash free secret key` from Cashfree Payment Gateway website and paste them in `.env` file.
+
+```sh
+# replace the below vlues of keys with yours
+PUBLIC_CASHFREE_APP_ID=""
+PUBLIC_CASHFREE_SECRET_KEY=""
+```
+> Note: Do not commit your credentials or secrets to the repository.
+
+### Google OAuth 🔐
+
+Creat your `client id` and `client secret` form Google. Now you have to paste them in pocketbase users collection. For that just follow the below steps
+
+1. Open the PocketBase dashboard.
+2. Go to the `users` collection.
+3. Click the collection settings icon.
+4. Open the `Options` tab.
+5. Click `OAuth2`.
+6. Click `Add provider`.
+7. Select `Google`.
+8. Paste your `client id` and `client secret`.
+9. Click `Set provider config`.
+10. Click `Save changes`.
+
 ## Useful debugging tip 💡
 
-When you run the application in dev mode click and hold option + x (for mac) or alt + x (for windows) then you will see a orange border around the elements, just click on the element to open the file in the editor that is responsible for that element in the browser
+When you run the application in dev mode click and hold option + x (for mac) or alt + x (for windows) then you will see a orange border around the elements, just click on the element to open the file in the editor that is responsible for that element in the browser.
